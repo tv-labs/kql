@@ -1,0 +1,24 @@
+name: Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  exunit:
+    runs-on: ubuntu-latest
+    env:
+      MIX_ENV: test
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: erlef/setup-beam@v1
+        with:
+          elixir-version: '1.18'
+          otp-version: '26'
+      - run: rm mix.lock
+      - run: mix deps.get --only test
+      - run: mix compile --force --warnings-as-errors
+      - run: mix test --warnings-as-errors
+      - run: mix format --check-formatted
