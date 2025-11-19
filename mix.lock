@@ -1,0 +1,4 @@
+%{
+  "nimble_parsec": {:hex, :nimble_parsec, "1.4.2", "8efba0122db06df95bfaa78f791344a89352ba04baedd3849593bfce4d0dc1c6", [:mix], [], "hexpm", "4b21398942dda052b403bbe1da991ccd03a053668d147d53fb8c4e0efe09c973"},
+  "stream_data": {:hex, :stream_data, "1.1.3", "15fdb14c64e84437901258bb56fc7d80aaf6ceaf85b9324f359e219241353bfb", [:mix], [], "hexpm", "859eb2be72d74be26c1c4f272905667672a52e44f743839c57c7ee73a1a66420"},
+}
