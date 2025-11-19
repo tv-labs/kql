@@ -22,7 +22,7 @@ defmodule KQL.MixProject do
         }
       ],
       docs: [
-        source_ref: "v#{@version}",
+        source_ref: @version,
         source_url: @source_url,
         extras: ["CHANGELOG.md"]
       ]
@@ -44,7 +44,7 @@ defmodule KQL.MixProject do
 
   defp aliases do
     [
-      "compile.nimble": ["nimble_parsec.compile lib/kql.ex.exs", "format lib/kql.ex"],
+      "compile.nimble": ["nimble_parsec.compile lib/kql.ex.exs", "format lib/kql.ex"]
     ]
   end
 end
