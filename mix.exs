@@ -22,6 +22,7 @@ defmodule KQL.MixProject do
         }
       ],
       docs: [
+        main: "KQL",
         source_ref: @version,
         source_url: @source_url,
         extras: ["CHANGELOG.md"]
@@ -38,13 +39,21 @@ defmodule KQL.MixProject do
   defp deps do
     [
       {:nimble_parsec, "~> 1.4", only: [:dev, :test]},
-      {:stream_data, "~> 1.1.1", only: [:test], runtime: false}
+      {:stream_data, "~> 1.1.1", only: [:test], runtime: false},
+      {:ex_doc, "~> 0.34", only: :dev, runtime: false, warn_if_outdated: true},
+      {:tidewave, "~> 0.4", only: :dev},
+      {:bandit, "~> 1.0", only: :dev}
     ]
   end
 
   defp aliases do
     [
-      "compile.nimble": ["nimble_parsec.compile lib/kql.ex.exs", "format lib/kql.ex"]
+      "compile.nimble": [
+        "nimble_parsec.compile lib/kql.ex.exs",
+        "format lib/kql.ex --force --migrate"
+      ],
+      tidewave:
+        "run --no-halt -e 'Agent.start(fn -> Bandit.start_link(plug: Tidewave, port: 4010) end)'"
     ]
   end
 end
