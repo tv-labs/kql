@@ -1,28 +1,14 @@
 # Generated from lib/kql.ex.exs, do not edit.
-# Generated at 2025-11-19 21:26:12Z.
+# Generated at 2025-11-20 13:36:41Z.
 
 defmodule KQL do
-  @moduledoc """
-  Parser for a simplified version of the [Kibana query language](https://www.elastic.co/docs/explore-analyze/query-filter/languages/kql) into an AST.
+  @external_resource "README.md"
+  @moduledoc "README.md"
+             |> File.read!()
+             |> String.split("<!-- MDOC !-->")
+             |> Enum.fetch!(1)
 
-  ## What is supported?
-
-  - Comparison operators: `>`, `>=`, `<`, `<=`, `:`
-  - Quoted and unquoted values, including escape characters: `make:"foo bar"`, `make:foo\ bar`
-  - Not, and, & or operators: `NOT make:foo`, `make:foo AND model:bar`, `make:foo OR model:bar`
-  - Grouping expressions with `()`: `make:foo OR (make:bar AND model:bar)`
-  - UTF-8 values: `make:苹果`
-  - Glob values: `make:foo*`
-  - Value lists: `make: (foo OR bar)`
-
-  ## What is missing?
-
-  - Nested fields: `first.second: foo`
-  - Matching multiple fields (glob values in field name): `make*:foo`
-  - Querying nested fields: `make:{ first: foo and second: bar }`
-  """
-
-  @version 1
+  @version Mix.Project.config()[:version]
 
   @doc """
   Parses a KQL query into a JSON serializable AST structure.
@@ -97,22 +83,6 @@ defmodule KQL do
     raise "Unexpected ast node: #{inspect(other)}"
   end
 
-  @doc """
-  Parses the given `binary` as parse_query.
-
-  Returns `{:ok, [token], rest, context, position, byte_offset}` or
-  `{:error, reason, rest, context, line, byte_offset}` where `position`
-  describes the location of the parse_query (start position) as `{line, offset_to_start_of_line}`.
-
-  To column where the error occurred can be inferred from `byte_offset - offset_to_start_of_line`.
-
-  ## Options
-
-    * `:byte_offset` - the byte offset for the whole binary, defaults to 0
-    * `:line` - the line and the byte offset into that line, defaults to `{1, byte_offset}`
-    * `:context` - the initial context value. It will be converted to a map
-
-  """
   @spec parse_query(binary, keyword) ::
           {:ok, [term], rest, context, line, byte_offset}
           | {:error, reason, rest, context, line, byte_offset}
@@ -121,7 +91,7 @@ defmodule KQL do
              rest: binary,
              reason: String.t(),
              context: map
-  def parse_query(binary, opts \\ []) when is_binary(binary) do
+  defp parse_query(binary, opts \\ []) when is_binary(binary) do
     context = Map.new(Keyword.get(opts, :context, []))
     byte_offset = Keyword.get(opts, :byte_offset, 0)
 

@@ -44,21 +44,21 @@ end
 ```elixir
 iex> KQL.parse("make:foo")
 {:ok, %{
-    "ast" => %{
+  "ast" => %{
     "field" => "make",
     "operator" => "=",
     "type" => "comparison",
     "value" => %{
-        "type" => "value",
-        "term" => "foo",
-        "glob" => false,
-        "quoted" => false
+      "type" => "value",
+      "term" => "foo",
+      "glob" => false,
+      "quoted" => false
     }
-    },
-    "meta" => %{
+  },
+  "meta" => %{
     "original_query" => "make:foo",
     "version" => "0.1.0"
-    }
+  }
 }}
 ```
 
@@ -67,36 +67,34 @@ Globs are supported too:
 ```elixir
 iex> KQL.parse("make:A* AND model:*X")
 {:ok, %{
-    "ast" => %{
+  "ast" => %{
     "type" => "and",
-    "terms" => [
-        %{
-        "type" => "comparison",
-        "field" => "make",
-        "operator" => "=",
-        "value" => %{
-            "type" => "value",
-            "term" => "A*",
-            "glob" => true,
-            "quoted" => false
-        }
-        },
-        %{
-        "type" => "comparison",
-        "field" => "model",
-        "operator" => "=",
-        "value" => %{
-            "type" => "value",
-            "term" => "*X",
-            "glob" => true,
-            "quoted" => false
-        }
-        }
-    ]
+    "terms" => [%{
+      "type" => "comparison",
+      "field" => "make",
+      "operator" => "=",
+      "value" => %{
+        "type" => "value",
+        "term" => "A*",
+        "glob" => true,
+        "quoted" => false
+      }
     },
-    "meta" => %{
+    %{
+      "type" => "comparison",
+      "field" => "model",
+      "operator" => "=",
+      "value" => %{
+        "type" => "value",
+        "term" => "*X",
+        "glob" => true,
+        "quoted" => false
+      }
+    }]
+  },
+  "meta" => %{
     "original_query" => "make:A* AND model:*X",
     "version" => "0.1.0"
-    }
+  }
 }}
 ```

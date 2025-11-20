@@ -322,7 +322,7 @@ defmodule KQL do
     ])
   )
 
-  defparsec(
+  defparsecp(
     :parse_query,
     optional_whitespace
     |> ignore()
