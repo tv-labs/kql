@@ -1,7 +1,7 @@
 defmodule KQL.MixProject do
   use Mix.Project
   @version "0.1.0"
-  @source_url "https://github.com/tvlabs-ai/kql"
+  @source_url "https://github.com/tv-labs/kql"
 
   def project do
     [
@@ -18,7 +18,7 @@ defmodule KQL.MixProject do
         links: %{
           "GitHub" => @source_url,
           "Elastic Docs" => "https://www.elastic.co/docs/reference/query-languages/kql",
-          "Changelog" => "https://github.com/tvlabs-ai/kql/blob/#{@version}/CHANGELOG.md"
+          "Changelog" => "https://github.com/tv-labs/kql/blob/#{@version}/CHANGELOG.md"
         }
       ],
       docs: [
