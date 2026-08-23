@@ -1,6 +1,7 @@
 defmodule KQLTest do
   use ExUnit.Case, async: true
   use ExUnitProperties
+
   doctest KQL
 
   property "parses valid queries into JSON serializable ast and metadata" do
@@ -581,6 +582,39 @@ defmodule KQLTest do
                   ]
                 }
               }} = KQL.parse(~S|color:"Red" OR color:*Blue*|)
+    end
+  end
+
+  describe "dotted field names" do
+    test "parse as a single field" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse(~S|car.make:"Alfa Romeo"|)
+      assert ast["field"] == "car.make"
+      assert ast["value"]["term"] == "Alfa Romeo"
+    end
+
+    test "support more than one segment" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse("car.engine.cylinders:6")
+      assert ast["field"] == "car.engine.cylinders"
+      assert ast["value"]["term"] == "6"
+    end
+
+    test "cannot start with a dot" do
+      assert {:error, _} = KQL.parse(".make:alfa")
+    end
+
+    test "cannot start with a digit or dash, as before" do
+      assert {:error, _} = KQL.parse("14.0.0:alfa")
+      assert {:error, _} = KQL.parse("-make:alfa")
+    end
+
+    test "leave dots inside values alone" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse("version:14.0.0")
+      assert ast["field"] == "version"
+      assert ast["value"]["term"] == "14.0.0"
+    end
+
+    test "quoted field names remain unsupported" do
+      assert {:error, _} = KQL.parse(~S|"car.make":alfa|)
     end
   end
 

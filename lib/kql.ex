@@ -1,5 +1,5 @@
 # Generated from lib/kql.ex.exs, do not edit.
-# Generated at 2025-11-20 13:36:41Z.
+# Generated at 2026-08-23 20:54:50Z.
 
 defmodule KQL do
   @external_resource "README.md"
@@ -253,7 +253,7 @@ defmodule KQL do
       {:ok, acc, rest, context, line, offset} ->
         or_expr__7(rest, acc, stack, context, line, offset)
 
-      {:error, _, _, _, _, _} = _error ->
+      {:error, _, _, _, _, _} = error ->
         [acc | stack] = stack
         or_expr__4(rest, acc, stack, context, line, offset)
     end
@@ -402,7 +402,7 @@ defmodule KQL do
       {:ok, acc, rest, context, line, offset} ->
         or_expr__22(rest, acc, stack, context, line, offset)
 
-      {:error, _, _, _, _, _} = _error ->
+      {:error, _, _, _, _, _} = error ->
         [acc | stack] = stack
         or_expr__4(rest, acc, stack, context, line, offset)
     end
@@ -554,7 +554,7 @@ defmodule KQL do
       {:ok, acc, rest, context, line, offset} ->
         or_expr__39(rest, acc, stack, context, line, offset)
 
-      {:error, _, _, _, _, _} = _error ->
+      {:error, _, _, _, _, _} = error ->
         or_expr__23(rest, acc, stack, context, line, offset)
     end
   end
@@ -627,7 +627,7 @@ defmodule KQL do
       {:ok, acc, rest, context, line, offset} ->
         and_expr__7(rest, acc, stack, context, line, offset)
 
-      {:error, _, _, _, _, _} = _error ->
+      {:error, _, _, _, _, _} = error ->
         [acc | stack] = stack
         and_expr__4(rest, acc, stack, context, line, offset)
     end
@@ -776,7 +776,7 @@ defmodule KQL do
       {:ok, acc, rest, context, line, offset} ->
         and_expr__22(rest, acc, stack, context, line, offset)
 
-      {:error, _, _, _, _, _} = _error ->
+      {:error, _, _, _, _, _} = error ->
         [acc | stack] = stack
         and_expr__4(rest, acc, stack, context, line, offset)
     end
@@ -928,7 +928,7 @@ defmodule KQL do
       {:ok, acc, rest, context, line, offset} ->
         and_expr__39(rest, acc, stack, context, line, offset)
 
-      {:error, _, _, _, _, _} = _error ->
+      {:error, _, _, _, _, _} = error ->
         and_expr__23(rest, acc, stack, context, line, offset)
     end
   end
@@ -1094,7 +1094,7 @@ defmodule KQL do
       {:ok, acc, rest, context, line, offset} ->
         not_expr__15(rest, acc, stack, context, line, offset)
 
-      {:error, _, _, _, _, _} = _error ->
+      {:error, _, _, _, _, _} = error ->
         [acc | stack] = stack
         not_expr__4(rest, acc, stack, context, line, offset)
     end
@@ -1198,7 +1198,7 @@ defmodule KQL do
       {:ok, acc, rest, context, line, offset} ->
         group_expr__14(rest, acc, stack, context, line, offset)
 
-      {:error, _, _, _, _, _} = _error ->
+      {:error, _, _, _, _, _} = error ->
         [acc | stack] = stack
         group_expr__4(rest, acc, stack, context, line, offset)
     end
@@ -1280,7 +1280,7 @@ defmodule KQL do
   end
 
   defp base_expr__2(<<x0::utf8, _::binary>> = rest, _acc, _stack, context, line, offset)
-       when (x0 >= 48 and x0 <= 57) or x0 === 45 do
+       when (x0 >= 48 and x0 <= 57) or x0 === 45 or x0 === 46 do
     {:error, "did not expect field name while processing comparison", rest, context, line, offset}
   end
 
@@ -1295,7 +1295,7 @@ defmodule KQL do
   defp base_expr__4(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
        when (x0 >= 97 and x0 <= 122) or (x0 >= 65 and x0 <= 90) or (x0 >= 48 and x0 <= 57) or
               x0 === 95 or
-              x0 === 45 do
+              x0 === 45 or x0 === 46 do
     base_expr__5(
       rest,
       [<<x0::utf8>>] ++ acc,
@@ -1313,7 +1313,7 @@ defmodule KQL do
   defp base_expr__5(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
        when (x0 >= 97 and x0 <= 122) or (x0 >= 65 and x0 <= 90) or (x0 >= 48 and x0 <= 57) or
               x0 === 95 or
-              x0 === 45 do
+              x0 === 45 or x0 === 46 do
     base_expr__7(
       rest,
       [x0] ++ acc,

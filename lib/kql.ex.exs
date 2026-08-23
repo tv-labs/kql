@@ -135,11 +135,16 @@ defmodule KQL do
     |> utf8_char()
     |> label("unescaped character")
 
+  # Dots are legal within a field name, so callers can namespace fields
+  # (`a.b`, `a.b.c`), but not as the first character. A dot is already legal
+  # inside values via `unescaped_character`, and field and value positions are
+  # grammatically distinct, so this adds no ambiguity — a value-shaped token
+  # such as `14.0.0` in field position remains an error.
   field_name =
-    [?0..?9, ?-]
+    [?0..?9, ?-, ?.]
     |> utf8_char()
     |> lookahead_not()
-    |> utf8_string([?a..?z, ?A..?Z, ?0..?9, ?_, ?-], min: 1)
+    |> utf8_string([?a..?z, ?A..?Z, ?0..?9, ?_, ?-, ?.], min: 1)
     |> unwrap_and_tag(:field)
     |> label("field name")
 
