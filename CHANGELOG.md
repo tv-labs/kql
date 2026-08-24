@@ -29,6 +29,10 @@
   produces the same `value_list` AST. Whitespace around the comma is optional,
   elements may be quoted or globs, and a single-element list (`field:[a]`) is
   valid.
+- The nested-object form: `first: { second: foo and third: bar }`, which
+  produces the same `nested` nodes the dotted form does — `a:{b:c}` and `a.b:c`
+  are the same AST. Bodies may hold any expression, nest further
+  (`a:{b:{c:d}}`), and take a quoted or dotted path.
 
 ### Fixed
 
@@ -39,9 +43,19 @@
 
 ### Notes
 
-Every query valid in 0.1.0 parses to the same AST. Neither dotted nor quoted
-field names parsed at all in 0.1.0, so the `nested` node cannot appear for any
-query that previously worked: an undotted `make:foo` is still a bare
+**One breaking change:** `{` and `}` join `\`, `(`, `)`, `:`, `<`, `>`, `"` and
+`*` as characters that must be quoted or escaped in an unquoted value. A
+character cannot be structural and an ordinary value character at once, which is
+the same reason parens have always been excluded. This matches Kibana, whose
+grammar defines `SpecialCharacter = [\\():<>"*{}]` — kql's set was that one
+minus the braces, only because nested queries were unsupported.
+
+So `make:a{b}c` parsed in 0.1.0 and is now an error; write `make:"a{b}c"` or
+`make:a\{b\}c`.
+
+Otherwise every query valid in 0.1.0 parses to the same AST. Dotted and quoted
+field names did not parse at all in 0.1.0, so a `nested` node cannot appear for
+any query that previously worked: an undotted `make:foo` is still a bare
 `comparison`.
 
 Because `[`, `]` and `,` remain legal unquoted-value characters, a value that

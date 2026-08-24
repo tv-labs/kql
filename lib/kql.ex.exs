@@ -52,7 +52,19 @@ defmodule KQL do
   end
 
   defp transform_tagged_ast({:comparison, [{:field, segments}, {:operator, operator}, value]}) do
-    nest(segments, operator, value)
+    {leaf, path} = List.pop_at(segments, -1)
+    nest_path(path, comparison(leaf, operator, value))
+  end
+
+  # `field:{ ... }` is the same nesting the dotted form produces, with the whole
+  # inner expression at the leaf instead of a single comparison — so
+  # `a:{b:c}` and `a.b:c` are the same AST.
+  defp transform_tagged_ast({:nested_group, [{:field, segments}, inner]}) do
+    nest_path(segments, transform_tagged_ast(inner))
+  end
+
+  defp transform_tagged_ast({:nested_group, [{:quoted_field, path}, inner]}) do
+    nest_path([path], transform_tagged_ast(inner))
   end
 
   defp transform_tagged_ast({:comparison, [{:quoted_field, field}, {:operator, operator}, value]}) do
@@ -84,10 +96,10 @@ defmodule KQL do
   # operator travels down with it. Recursing through "term" is the convention
   # `not` and `group` already use, so a walker that handles those descends this
   # without changes. A quoted field name skips all of it and stays literal.
-  defp nest([field], operator, value), do: comparison(field, operator, value)
+  defp nest_path([], term), do: term
 
-  defp nest([path | rest], operator, value) do
-    %{"type" => "nested", "path" => path, "term" => nest(rest, operator, value)}
+  defp nest_path([path | rest], term) do
+    %{"type" => "nested", "path" => path, "term" => nest_path(rest, term)}
   end
 
   defp comparison(field, operator, value) do
@@ -133,7 +145,12 @@ defmodule KQL do
     |> utf8_char([])
     |> label("escaped character")
 
-  # Matches all characters except those needing to be escaped: \():<>"*
+  # Matches all characters except those needing to be escaped: \():<>"*{}
+  #
+  # This is Kibana's `SpecialCharacter = [\\():<>"*{}]` set. Braces belong to it
+  # because `field:{ ... }` is the nested-query syntax — a character cannot be
+  # both structural and an ordinary value character, which is the same reason
+  # parens are excluded.
   unescaped_character =
     [
       # 33 (!)
@@ -148,8 +165,12 @@ defmodule KQL do
       ?=,
       # 63-91 (? to [ - after > to before \)
       ??..?[,
-      # 93+ (] onwards - after \)
-      ?]..0x10FFFF
+      # 93-122 (] to z - after \, up to before {)
+      ?]..?z,
+      # 124 (| - between { and })
+      ?|,
+      # 126+ (~ onwards - after })
+      ?~..0x10FFFF
     ]
     |> utf8_char()
     |> label("unescaped character")
@@ -265,8 +286,10 @@ defmodule KQL do
       ?;,
       ?=,
       ??..?[,
-      # 94+ (^ onwards), skipping 93 (])
-      ?^..0x10FFFF
+      # 94-122 (^ to z), skipping 93 (]) and stopping before {
+      ?^..?z,
+      ?|,
+      ?~..0x10FFFF
     ]
     |> utf8_char()
     |> label("unescaped character in a list")
@@ -379,8 +402,27 @@ defmodule KQL do
     |> unwrap_and_tag(:operator)
     |> label("comparison operator")
 
+  # `{` and `}` are ordinary value characters, so `car:{make:alfa}` would
+  # otherwise parse as the value `{make:alfa}`. The braced form is tried first
+  # and `choice/1` backtracks, which is also what leaves `car:a{b}c` alone.
   defcombinatorp(
-    :base_expr,
+    :nested_expr,
+    [quoted_field_name, field_name]
+    |> choice()
+    |> ignore(optional_whitespace)
+    |> ignore(string(":"))
+    |> ignore(optional_whitespace)
+    |> ignore(string("{"))
+    |> ignore(optional_whitespace)
+    |> parsec(:or_expr)
+    |> ignore(optional_whitespace)
+    |> ignore(string("}"))
+    |> tag(:nested_group)
+    |> label("nested expression")
+  )
+
+  defcombinatorp(
+    :comparison_expr,
     [quoted_field_name, field_name]
     |> choice()
     |> ignore(optional_whitespace)
@@ -389,6 +431,11 @@ defmodule KQL do
     |> concat(choice([value_list, value]))
     |> tag(:comparison)
     |> label("comparison")
+  )
+
+  defcombinatorp(
+    :base_expr,
+    choice([parsec(:nested_expr), parsec(:comparison_expr)])
   )
 
   defcombinatorp(

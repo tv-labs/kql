@@ -665,6 +665,99 @@ defmodule KQLTest do
     end
   end
 
+  describe "nested-object syntax" do
+    test "is equivalent to the dotted form" do
+      assert {:ok, %{"ast" => braced}} = KQL.parse("car:{make:alfa}")
+      assert {:ok, %{"ast" => dotted}} = KQL.parse("car.make:alfa")
+
+      assert braced == dotted
+    end
+
+    test "distributes the path over every term inside" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse("car:{make:alfa and year>=2020}")
+
+      assert %{
+               "type" => "nested",
+               "path" => "car",
+               "term" => %{
+                 "type" => "and",
+                 "terms" => [
+                   %{"type" => "comparison", "field" => "make"},
+                   %{"type" => "comparison", "field" => "year", "operator" => ">="}
+                 ]
+               }
+             } = ast
+    end
+
+    test "accepts or, not, and grouping inside" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse("car:{make:alfa or (not make:fiat)}")
+
+      assert %{"type" => "nested", "path" => "car", "term" => %{"type" => "or"}} = ast
+    end
+
+    test "tolerates whitespace around the braces" do
+      assert {:ok, %{"ast" => spaced}} = KQL.parse("car: { make: alfa }")
+      assert {:ok, %{"ast" => tight}} = KQL.parse("car:{make:alfa}")
+
+      assert spaced == tight
+    end
+
+    test "nests further when the path is dotted" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse("car.engine:{cylinders:6}")
+
+      assert %{
+               "type" => "nested",
+               "path" => "car",
+               "term" => %{
+                 "type" => "nested",
+                 "path" => "engine",
+                 "term" => %{"type" => "comparison", "field" => "cylinders"}
+               }
+             } = ast
+    end
+
+    test "nests when the inside is itself braced" do
+      assert {:ok, %{"ast" => braced}} = KQL.parse("car:{engine:{cylinders:6}}")
+      assert {:ok, %{"ast" => dotted}} = KQL.parse("car.engine.cylinders:6")
+
+      assert braced == dotted
+    end
+
+    test "a quoted path stays literal" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse(~S|"car.x":{make:alfa}|)
+
+      assert %{"type" => "nested", "path" => "car.x", "term" => %{"field" => "make"}} = ast
+    end
+
+    test "composes with the operators outside it" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse("colour:red and car:{make:alfa}")
+
+      assert %{"type" => "and", "terms" => [%{"type" => "comparison"}, %{"type" => "nested"}]} =
+               ast
+    end
+
+    test "rejects an empty body" do
+      assert {:error, _} = KQL.parse("car:{}")
+    end
+
+    test "rejects an unclosed brace" do
+      assert {:error, _} = KQL.parse("car:{make:alfa")
+    end
+
+    test "a literal brace in a value must be quoted or escaped" do
+      # Braces are `SpecialCharacter` in Kibana's grammar for exactly this
+      # reason: a character cannot be structural and an ordinary value
+      # character at once. Same treatment parens have always had.
+      assert {:error, _} = KQL.parse("car:a{b}c")
+
+      assert {:ok, %{"ast" => quoted}} = KQL.parse(~S|car:"a{b}c"|)
+      assert quoted["value"]["term"] == "a{b}c"
+
+      assert {:ok, %{"ast" => escaped}} = KQL.parse(~S|car:a\{b\}c|)
+      assert escaped["value"]["term"] == "a{b}c"
+    end
+  end
+
   describe "quoted field names" do
     test "are literal, so dots do not nest" do
       assert {:ok, %{"ast" => ast}} = KQL.parse(~S|"car.make":alfa|)
@@ -929,7 +1022,22 @@ defmodule KQLTest do
   # them in addition to everything the parenthesised form escapes.
   defp valid_bracket_unquoted_value_generator do
     gen all(value <- string(:ascii, min_length: 1)) do
-      escape_symbols(value, ["\\", "(", ")", ":", "<", ">", "\"", "*", " ", "=", ",", "]"])
+      escape_symbols(value, [
+        "\\",
+        "(",
+        ")",
+        ":",
+        "<",
+        ">",
+        "\"",
+        "*",
+        " ",
+        "=",
+        ",",
+        "]",
+        "{",
+        "}"
+      ])
     end
   end
 
@@ -937,7 +1045,7 @@ defmodule KQLTest do
     gen all(value <- string(:ascii, min_length: 1)) do
       # Although = does not need to be escaped, it is included here
       # to avoid any issues with it being interpreted as part of the comparison operator
-      escape_symbols(value, ["\\", "(", ")", ":", "<", ">", "\"", "*", " ", "="])
+      escape_symbols(value, ["\\", "(", ")", ":", "<", ">", "\"", "*", " ", "=", "{", "}"])
     end
   end
 
