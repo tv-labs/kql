@@ -585,17 +585,62 @@ defmodule KQLTest do
     end
   end
 
-  describe "dotted field names" do
-    test "parse as a single field" do
+  describe "unquoted dotted field names" do
+    test "nest, one level per dot" do
       assert {:ok, %{"ast" => ast}} = KQL.parse(~S|car.make:"Alfa Romeo"|)
-      assert ast["field"] == "car.make"
-      assert ast["value"]["term"] == "Alfa Romeo"
+
+      assert %{
+               "type" => "nested",
+               "path" => "car",
+               "term" => %{
+                 "type" => "comparison",
+                 "field" => "make",
+                 "operator" => "=",
+                 "value" => %{"type" => "value", "term" => "Alfa Romeo", "quoted" => true}
+               }
+             } = ast
     end
 
-    test "support more than one segment" do
+    test "nest once per additional segment" do
       assert {:ok, %{"ast" => ast}} = KQL.parse("car.engine.cylinders:6")
-      assert ast["field"] == "car.engine.cylinders"
-      assert ast["value"]["term"] == "6"
+
+      assert %{
+               "type" => "nested",
+               "path" => "car",
+               "term" => %{
+                 "type" => "nested",
+                 "path" => "engine",
+                 "term" => %{"type" => "comparison", "field" => "cylinders"}
+               }
+             } = ast
+    end
+
+    test "an undotted field is an ordinary comparison, unchanged" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse("make:alfa")
+      assert ast["type"] == "comparison"
+      assert ast["field"] == "make"
+      refute Map.has_key?(ast, "path")
+    end
+
+    test "nest inside the operators that already recurse" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse("not car.make:alfa")
+
+      assert %{
+               "type" => "not",
+               "term" => %{"type" => "nested", "path" => "car"}
+             } = ast
+    end
+
+    test "carry non-equality operators down to the leaf" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse("car.engine.litres>=2")
+
+      assert %{
+               "type" => "nested",
+               "term" => %{
+                 "type" => "nested",
+                 "term" => %{"type" => "comparison", "field" => "litres", "operator" => ">="}
+               }
+             } = ast
     end
 
     test "cannot start with a dot" do
@@ -607,14 +652,48 @@ defmodule KQLTest do
       assert {:error, _} = KQL.parse("-make:alfa")
     end
 
+    test "reject an empty segment" do
+      assert {:error, _} = KQL.parse("car.:alfa")
+      assert {:error, _} = KQL.parse("car..make:alfa")
+    end
+
     test "leave dots inside values alone" do
       assert {:ok, %{"ast" => ast}} = KQL.parse("version:14.0.0")
+      assert ast["type"] == "comparison"
       assert ast["field"] == "version"
       assert ast["value"]["term"] == "14.0.0"
     end
+  end
 
-    test "quoted field names remain unsupported" do
-      assert {:error, _} = KQL.parse(~S|"car.make":alfa|)
+  describe "quoted field names" do
+    test "are literal, so dots do not nest" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse(~S|"car.make":alfa|)
+
+      assert %{
+               "type" => "comparison",
+               "field" => "car.make",
+               "operator" => "=",
+               "value" => %{"term" => "alfa"}
+             } = ast
+    end
+
+    test "distinguish a literal dotted name from a path" do
+      assert {:ok, %{"ast" => literal}} = KQL.parse(~S|"car.make":alfa|)
+      assert {:ok, %{"ast" => path}} = KQL.parse("car.make:alfa")
+
+      assert literal["type"] == "comparison"
+      assert path["type"] == "nested"
+    end
+
+    test "allow characters an unquoted name cannot hold" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse(~S|"engine litres":2|)
+      assert ast["field"] == "engine litres"
+    end
+
+    test "work with every operator" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse(~S|"car.year">=2020|)
+      assert ast["field"] == "car.year"
+      assert ast["operator"] == ">="
     end
   end
 
@@ -762,13 +841,28 @@ defmodule KQLTest do
     end
   end
 
-  # Dotted names are generated too, so the namespacing syntax gets property
-  # coverage rather than only the examples above. Each segment starts with a
-  # letter or underscore, which keeps the whole name from starting with a dot
-  # or a digit.
+  # Dotted and quoted names are generated too, so both field forms get property
+  # coverage rather than only the examples above.
   defp valid_field_name_generator do
+    one_of([
+      valid_unquoted_field_name_generator(),
+      valid_quoted_field_name_generator()
+    ])
+  end
+
+  # Each segment starts with a letter or underscore, which keeps the whole name
+  # from starting with a dot or a digit and guarantees no empty segments.
+  defp valid_unquoted_field_name_generator do
     gen all(segments <- list_of(valid_field_segment_generator(), min_length: 1, max_length: 3)) do
       Enum.join(segments, ".")
+    end
+  end
+
+  defp valid_quoted_field_name_generator do
+    all_printable_chars_except_quote = Enum.to_list(32..126) -- [?"]
+
+    gen all(value <- string(all_printable_chars_except_quote, min_length: 1)) do
+      ~S(") <> value <> ~S(")
     end
   end
 

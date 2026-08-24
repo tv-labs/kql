@@ -22,17 +22,17 @@ Parser for a simplified version of the [Kibana query language](https://www.elast
 - UTF-8 values: `make:苹果`
 - Glob values: `make:foo*`
 - Value lists: `make: (foo OR bar)`, `make: [foo, bar]`
-- Dots as ordinary field-name characters: `first.second: foo` parses, yielding
-  the field name `"first.second"` — one flat string, no path structure
+- Nested fields: `first.second: foo` produces a `nested` node per dot, wrapping
+  the comparison at the leaf
+- Quoted field names: `"first.second": foo` is a literal field name — quoting
+  makes the dots characters rather than path separators
 
 ## What is missing?
 
-- Nested fields. A dotted name is not resolved as a path: the AST carries
-  `"field" => "first.second"` and nothing distinguishes it from a field
-  literally named `first.second`. Callers that need segments must split it
-  themselves.
 - Matching multiple fields (glob values in field name): `make*:foo`
-- Querying nested fields: `make:{ first: foo and second: bar }`
+- The nested-object form: `make:{ first: foo and second: bar }`. Note
+  `make.first: foo` already gives you the equivalent `nested` node, so this is
+  syntax rather than new structure.
 
 ## Installation
 

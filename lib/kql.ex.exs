@@ -51,13 +51,12 @@ defmodule KQL do
     %{"type" => "group", "term" => transform_tagged_ast(term)}
   end
 
-  defp transform_tagged_ast({:comparison, [{:field, field}, {:operator, operator}, value]}) do
-    %{
-      "type" => "comparison",
-      "field" => field,
-      "operator" => to_string(operator),
-      "value" => transform_tagged_ast(value)
-    }
+  defp transform_tagged_ast({:comparison, [{:field, segments}, {:operator, operator}, value]}) do
+    nest(segments, operator, value)
+  end
+
+  defp transform_tagged_ast({:comparison, [{:quoted_field, field}, {:operator, operator}, value]}) do
+    comparison(field, operator, value)
   end
 
   defp transform_tagged_ast({:value_list, values}) do
@@ -78,6 +77,26 @@ defmodule KQL do
 
   defp transform_tagged_ast(other) do
     raise "Unexpected ast node: #{inspect(other)}"
+  end
+
+  # Every leading segment of an unquoted dotted field name becomes a `nested`
+  # node wrapping the rest, so the comparison always sits at the leaf and the
+  # operator travels down with it. Recursing through "term" is the convention
+  # `not` and `group` already use, so a walker that handles those descends this
+  # without changes. A quoted field name skips all of it and stays literal.
+  defp nest([field], operator, value), do: comparison(field, operator, value)
+
+  defp nest([path | rest], operator, value) do
+    %{"type" => "nested", "path" => path, "term" => nest(rest, operator, value)}
+  end
+
+  defp comparison(field, operator, value) do
+    %{
+      "type" => "comparison",
+      "field" => field,
+      "operator" => to_string(operator),
+      "value" => transform_tagged_ast(value)
+    }
   end
 
   # parsec:KQL
@@ -135,18 +154,36 @@ defmodule KQL do
     |> utf8_char()
     |> label("unescaped character")
 
-  # Dots are legal within a field name, so callers can namespace fields
-  # (`a.b`, `a.b.c`), but not as the first character. A dot is already legal
-  # inside values via `unescaped_character`, and field and value positions are
-  # grammatically distinct, so this adds no ambiguity — a value-shaped token
-  # such as `14.0.0` in field position remains an error.
+  field_segment = utf8_string([?a..?z, ?A..?Z, ?0..?9, ?_, ?-], min: 1)
+
+  # An unquoted field name is a dot-separated path. The dot is structural, not a
+  # name character, so `repeat` demands a segment after every dot and `a.` or
+  # `a..b` cannot parse. The leading lookahead keeps a value-shaped token such
+  # as `14.0.0` from being read as a field.
   field_name =
-    [?0..?9, ?-, ?.]
+    [?0..?9, ?-]
     |> utf8_char()
     |> lookahead_not()
-    |> utf8_string([?a..?z, ?A..?Z, ?0..?9, ?_, ?-, ?.], min: 1)
-    |> unwrap_and_tag(:field)
+    |> concat(field_segment)
+    |> repeat(
+      "."
+      |> string()
+      |> ignore()
+      |> concat(field_segment)
+    )
+    |> tag(:field)
     |> label("field name")
+
+  # Quoting a field name makes it literal: its dots are characters rather than
+  # path separators, and it may hold anything but a quote.
+  quoted_field_name =
+    "\""
+    |> string()
+    |> ignore()
+    |> utf8_string([{:not, ?"}], min: 1)
+    |> ignore(string("\""))
+    |> unwrap_and_tag(:quoted_field)
+    |> label("quoted field name")
 
   quoted_value =
     "\""
@@ -344,7 +381,8 @@ defmodule KQL do
 
   defcombinatorp(
     :base_expr,
-    field_name
+    [quoted_field_name, field_name]
+    |> choice()
     |> ignore(optional_whitespace)
     |> concat(comparison_op)
     |> ignore(optional_whitespace)
