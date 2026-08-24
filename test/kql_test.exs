@@ -1,6 +1,7 @@
 defmodule KQLTest do
   use ExUnit.Case, async: true
   use ExUnitProperties
+
   doctest KQL
 
   property "parses valid queries into JSON serializable ast and metadata" do
@@ -584,6 +585,309 @@ defmodule KQLTest do
     end
   end
 
+  # Builders for the expected ASTs below. Every assertion in these describes
+  # compares the whole node with `==` rather than pattern-matching a few keys:
+  # a partial match cannot catch a stray key, a wrong `glob`/`quoted` flag, or a
+  # value the parser misread into a field it was not asked about.
+  defp value(term, opts \\ []) do
+    %{
+      "type" => "value",
+      "term" => term,
+      "glob" => Keyword.get(opts, :glob, false),
+      "quoted" => Keyword.get(opts, :quoted, false)
+    }
+  end
+
+  defp comparison(field, operator, value) do
+    %{"type" => "comparison", "field" => field, "operator" => operator, "value" => value}
+  end
+
+  defp nested(path, term), do: %{"type" => "nested", "path" => path, "term" => term}
+
+  describe "unquoted dotted field names" do
+    test "nest, one level per dot" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse(~S|car.make:"Alfa Romeo"|)
+
+      assert ast == nested("car", comparison("make", "=", value("Alfa Romeo", quoted: true)))
+    end
+
+    test "nest once per additional segment" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse("car.engine.cylinders:6")
+
+      assert ast == nested("car", nested("engine", comparison("cylinders", "=", value("6"))))
+    end
+
+    test "an undotted field is an ordinary comparison, unchanged" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse("make:alfa")
+
+      assert ast == comparison("make", "=", value("alfa"))
+    end
+
+    test "nest inside the operators that already recurse" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse("not car.make:alfa")
+
+      assert ast == %{
+               "type" => "not",
+               "term" => nested("car", comparison("make", "=", value("alfa")))
+             }
+    end
+
+    test "carry non-equality operators down to the leaf" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse("car.engine.litres>=2")
+
+      assert ast == nested("car", nested("engine", comparison("litres", ">=", value("2"))))
+    end
+
+    test "cannot start with a dot" do
+      assert {:error, _} = KQL.parse(".make:alfa")
+    end
+
+    test "cannot start with a digit or dash, as before" do
+      assert {:error, _} = KQL.parse("14.0.0:alfa")
+      assert {:error, _} = KQL.parse("-make:alfa")
+    end
+
+    test "reject an empty segment" do
+      assert {:error, _} = KQL.parse("car.:alfa")
+      assert {:error, _} = KQL.parse("car..make:alfa")
+    end
+
+    test "leave dots inside values alone" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse("version:14.0.0")
+
+      assert ast == comparison("version", "=", value("14.0.0"))
+    end
+  end
+
+  describe "nested-object syntax" do
+    test "is equivalent to the dotted form" do
+      assert {:ok, %{"ast" => braced}} = KQL.parse("car:{make:alfa}")
+      assert {:ok, %{"ast" => dotted}} = KQL.parse("car.make:alfa")
+
+      assert braced == nested("car", comparison("make", "=", value("alfa")))
+      assert braced == dotted
+    end
+
+    test "distributes the path over every term inside" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse("car:{make:alfa and year>=2020}")
+
+      assert ast ==
+               nested("car", %{
+                 "type" => "and",
+                 "terms" => [
+                   comparison("make", "=", value("alfa")),
+                   comparison("year", ">=", value("2020"))
+                 ]
+               })
+    end
+
+    test "accepts or, not, and grouping inside" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse("car:{make:alfa or (not make:fiat)}")
+
+      assert ast ==
+               nested("car", %{
+                 "type" => "or",
+                 "terms" => [
+                   comparison("make", "=", value("alfa")),
+                   %{
+                     "type" => "group",
+                     "term" => %{
+                       "type" => "not",
+                       "term" => comparison("make", "=", value("fiat"))
+                     }
+                   }
+                 ]
+               })
+    end
+
+    test "tolerates whitespace around the braces" do
+      assert {:ok, %{"ast" => spaced}} = KQL.parse("car: { make: alfa }")
+
+      assert spaced == nested("car", comparison("make", "=", value("alfa")))
+    end
+
+    test "nests further when the path is dotted" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse("car.engine:{cylinders:6}")
+
+      assert ast == nested("car", nested("engine", comparison("cylinders", "=", value("6"))))
+    end
+
+    test "nests when the inside is itself braced" do
+      assert {:ok, %{"ast" => braced}} = KQL.parse("car:{engine:{cylinders:6}}")
+      assert {:ok, %{"ast" => dotted}} = KQL.parse("car.engine.cylinders:6")
+
+      assert braced == nested("car", nested("engine", comparison("cylinders", "=", value("6"))))
+      assert braced == dotted
+    end
+
+    test "a quoted path stays literal" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse(~S|"car.x":{make:alfa}|)
+
+      assert ast == nested("car.x", comparison("make", "=", value("alfa")))
+    end
+
+    test "composes with the operators outside it" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse("colour:red and car:{make:alfa}")
+
+      assert ast == %{
+               "type" => "and",
+               "terms" => [
+                 comparison("colour", "=", value("red")),
+                 nested("car", comparison("make", "=", value("alfa")))
+               ]
+             }
+    end
+
+    test "rejects an empty body" do
+      assert {:error, _} = KQL.parse("car:{}")
+    end
+
+    test "rejects an unclosed brace" do
+      assert {:error, _} = KQL.parse("car:{make:alfa")
+    end
+
+    test "a literal brace in a value must be quoted or escaped" do
+      # Braces are `SpecialCharacter` in Kibana's grammar for exactly this
+      # reason: a character cannot be structural and an ordinary value
+      # character at once. Same treatment parens have always had.
+      assert {:error, _} = KQL.parse("car:a{b}c")
+
+      assert {:ok, %{"ast" => quoted}} = KQL.parse(~S|car:"a{b}c"|)
+      assert quoted == comparison("car", "=", value("a{b}c", quoted: true))
+
+      assert {:ok, %{"ast" => escaped}} = KQL.parse(~S|car:a\{b\}c|)
+      assert escaped == comparison("car", "=", value("a{b}c"))
+    end
+  end
+
+  describe "quoted field names" do
+    test "are literal, so dots do not nest" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse(~S|"car.make":alfa|)
+
+      assert ast == comparison("car.make", "=", value("alfa"))
+    end
+
+    test "distinguish a literal dotted name from a path" do
+      assert {:ok, %{"ast" => literal}} = KQL.parse(~S|"car.make":alfa|)
+      assert {:ok, %{"ast" => path}} = KQL.parse("car.make:alfa")
+
+      assert literal == comparison("car.make", "=", value("alfa"))
+      assert path == nested("car", comparison("make", "=", value("alfa")))
+    end
+
+    test "allow characters an unquoted name cannot hold" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse(~S|"engine litres":2|)
+
+      assert ast == comparison("engine litres", "=", value("2"))
+    end
+
+    test "work with every operator" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse(~S|"car.year">=2020|)
+
+      assert ast == comparison("car.year", ">=", value("2020"))
+    end
+  end
+
+  describe "bracketed value lists" do
+    test "are equivalent to a parenthesised OR list" do
+      assert {:ok, %{"ast" => bracketed}} = KQL.parse("color:[red,blue]")
+      assert {:ok, %{"ast" => parens}} = KQL.parse("color:(red or blue)")
+
+      expected =
+        comparison("color", "=", %{
+          "type" => "value_list",
+          "terms" => [value("red"), value("blue")]
+        })
+
+      assert bracketed == expected
+      assert bracketed == parens
+    end
+
+    test "accept whitespace around the comma" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse("color:[red, blue]")
+
+      assert ast ==
+               comparison("color", "=", %{
+                 "type" => "value_list",
+                 "terms" => [value("red"), value("blue")]
+               })
+    end
+
+    test "accept quoted elements" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse(~S|color:["red","blue"]|)
+
+      assert ast ==
+               comparison("color", "=", %{
+                 "type" => "value_list",
+                 "terms" => [value("red", quoted: true), value("blue", quoted: true)]
+               })
+    end
+
+    test "accept more than two elements" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse("color:[red,blue,green]")
+
+      assert ast ==
+               comparison("color", "=", %{
+                 "type" => "value_list",
+                 "terms" => [value("red"), value("blue"), value("green")]
+               })
+    end
+
+    test "accept globs as elements" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse("color:[red*,blue]")
+
+      assert ast ==
+               comparison("color", "=", %{
+                 "type" => "value_list",
+                 "terms" => [value("red*", glob: true), value("blue")]
+               })
+    end
+
+    test "treat a quoted comma as a literal" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse(~S|color:["red,blue"]|)
+
+      assert ast ==
+               comparison("color", "=", %{
+                 "type" => "value_list",
+                 "terms" => [value("red,blue", quoted: true)]
+               })
+    end
+
+    test "treat an escaped comma as a literal" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse(~S|color:[red\,blue]|)
+
+      assert ast ==
+               comparison("color", "=", %{
+                 "type" => "value_list",
+                 "terms" => [value("red,blue")]
+               })
+    end
+
+    test "fall back to an ordinary value when a value character follows the list" do
+      # `[`, `]` and `,` remain legal unquoted-value characters, so `[a]x` is a
+      # value that merely looks like a list with a suffix. It parsed as a value
+      # before lists existed and must keep doing so, or every value with a
+      # list-shaped prefix would start erroring.
+      assert {:ok, %{"ast" => ast}} = KQL.parse("color:[a]x")
+
+      assert ast == comparison("color", "=", value("[a]x"))
+    end
+
+    test "still parse a lone bracket as an ordinary value character" do
+      # `[` and `]` remain legal inside an unquoted value, so a value that
+      # merely contains one is unaffected.
+      assert {:ok, %{"ast" => ast}} = KQL.parse("color:red[1]")
+
+      assert ast == comparison("color", "=", value("red[1]"))
+    end
+
+    test "fall back to an ordinary value when the bracket is unclosed" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse("color:[red,blue")
+
+      assert ast == comparison("color", "=", value("[red,blue"))
+    end
+  end
+
   @max_query_depth 5
 
   defp valid_query_generator(depth \\ 0)
@@ -655,7 +959,32 @@ defmodule KQLTest do
     end
   end
 
+  # Dotted and quoted names are generated too, so both field forms get property
+  # coverage rather than only the examples above.
   defp valid_field_name_generator do
+    one_of([
+      valid_unquoted_field_name_generator(),
+      valid_quoted_field_name_generator()
+    ])
+  end
+
+  # Each segment starts with a letter or underscore, which keeps the whole name
+  # from starting with a dot or a digit and guarantees no empty segments.
+  defp valid_unquoted_field_name_generator do
+    gen all(segments <- list_of(valid_field_segment_generator(), min_length: 1, max_length: 3)) do
+      Enum.join(segments, ".")
+    end
+  end
+
+  defp valid_quoted_field_name_generator do
+    all_printable_chars_except_quote = Enum.to_list(32..126) -- [?"]
+
+    gen all(value <- string(all_printable_chars_except_quote, min_length: 1)) do
+      ~S(") <> value <> ~S(")
+    end
+  end
+
+  defp valid_field_segment_generator do
     gen all(
           first_char <-
             member_of(Enum.map(?a..?z, &<<&1>>) ++ Enum.map(?A..?Z, &<<&1>>) ++ ["_"]),
@@ -681,6 +1010,13 @@ defmodule KQLTest do
   end
 
   defp valid_combined_value_generator do
+    one_of([
+      valid_paren_list_generator(),
+      valid_bracket_list_generator()
+    ])
+  end
+
+  defp valid_paren_list_generator do
     gen all(
           terms <- list_of(valid_uncombined_value_generator(), min_length: 2, max_length: 5),
           space1 <- member_of(["", " "]),
@@ -690,11 +1026,51 @@ defmodule KQLTest do
     end
   end
 
+  defp valid_bracket_list_generator do
+    gen all(
+          terms <- list_of(valid_bracket_element_generator(), min_length: 1, max_length: 5),
+          space <- member_of(["", " "])
+        ) do
+      "[" <> Enum.join(terms, "," <> space) <> "]"
+    end
+  end
+
+  defp valid_bracket_element_generator do
+    one_of([
+      valid_quoted_value_generator(),
+      valid_glob_value_generator(),
+      valid_bracket_unquoted_value_generator()
+    ])
+  end
+
+  # `,` and `]` delimit a bracketed list, so an unquoted element must escape
+  # them in addition to everything the parenthesised form escapes.
+  defp valid_bracket_unquoted_value_generator do
+    gen all(value <- string(:ascii, min_length: 1)) do
+      escape_symbols(value, [
+        "\\",
+        "(",
+        ")",
+        ":",
+        "<",
+        ">",
+        "\"",
+        "*",
+        " ",
+        "=",
+        ",",
+        "]",
+        "{",
+        "}"
+      ])
+    end
+  end
+
   defp valid_unquoted_value_generator do
     gen all(value <- string(:ascii, min_length: 1)) do
       # Although = does not need to be escaped, it is included here
       # to avoid any issues with it being interpreted as part of the comparison operator
-      escape_symbols(value, ["\\", "(", ")", ":", "<", ">", "\"", "*", " ", "="])
+      escape_symbols(value, ["\\", "(", ")", ":", "<", ">", "\"", "*", " ", "=", "{", "}"])
     end
   end
 

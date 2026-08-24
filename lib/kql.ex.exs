@@ -51,13 +51,24 @@ defmodule KQL do
     %{"type" => "group", "term" => transform_tagged_ast(term)}
   end
 
-  defp transform_tagged_ast({:comparison, [{:field, field}, {:operator, operator}, value]}) do
-    %{
-      "type" => "comparison",
-      "field" => field,
-      "operator" => to_string(operator),
-      "value" => transform_tagged_ast(value)
-    }
+  defp transform_tagged_ast({:comparison, [{:field, segments}, {:operator, operator}, value]}) do
+    {leaf, path} = List.pop_at(segments, -1)
+    nest_path(path, comparison(leaf, operator, value))
+  end
+
+  # `field:{ ... }` is the same nesting the dotted form produces, with the whole
+  # inner expression at the leaf instead of a single comparison — so
+  # `a:{b:c}` and `a.b:c` are the same AST.
+  defp transform_tagged_ast({:nested_group, [{:field, segments}, inner]}) do
+    nest_path(segments, transform_tagged_ast(inner))
+  end
+
+  defp transform_tagged_ast({:nested_group, [{:quoted_field, path}, inner]}) do
+    nest_path([path], transform_tagged_ast(inner))
+  end
+
+  defp transform_tagged_ast({:comparison, [{:quoted_field, field}, {:operator, operator}, value]}) do
+    comparison(field, operator, value)
   end
 
   defp transform_tagged_ast({:value_list, values}) do
@@ -78,6 +89,26 @@ defmodule KQL do
 
   defp transform_tagged_ast(other) do
     raise "Unexpected ast node: #{inspect(other)}"
+  end
+
+  # Every leading segment of an unquoted dotted field name becomes a `nested`
+  # node wrapping the rest, so the comparison always sits at the leaf and the
+  # operator travels down with it. Recursing through "term" is the convention
+  # `not` and `group` already use, so a walker that handles those descends this
+  # without changes. A quoted field name skips all of it and stays literal.
+  defp nest_path([], term), do: term
+
+  defp nest_path([path | rest], term) do
+    %{"type" => "nested", "path" => path, "term" => nest_path(rest, term)}
+  end
+
+  defp comparison(field, operator, value) do
+    %{
+      "type" => "comparison",
+      "field" => field,
+      "operator" => to_string(operator),
+      "value" => transform_tagged_ast(value)
+    }
   end
 
   # parsec:KQL
@@ -114,7 +145,12 @@ defmodule KQL do
     |> utf8_char([])
     |> label("escaped character")
 
-  # Matches all characters except those needing to be escaped: \():<>"*
+  # Matches all characters except those needing to be escaped: \():<>"*{}
+  #
+  # This is Kibana's `SpecialCharacter = [\\():<>"*{}]` set. Braces belong to it
+  # because `field:{ ... }` is the nested-query syntax — a character cannot be
+  # both structural and an ordinary value character, which is the same reason
+  # parens are excluded.
   unescaped_character =
     [
       # 33 (!)
@@ -129,19 +165,46 @@ defmodule KQL do
       ?=,
       # 63-91 (? to [ - after > to before \)
       ??..?[,
-      # 93+ (] onwards - after \)
-      ?]..0x10FFFF
+      # 93-122 (] to z - after \, up to before {)
+      ?]..?z,
+      # 124 (| - between { and })
+      ?|,
+      # 126+ (~ onwards - after })
+      ?~..0x10FFFF
     ]
     |> utf8_char()
     |> label("unescaped character")
 
+  field_segment = utf8_string([?a..?z, ?A..?Z, ?0..?9, ?_, ?-], min: 1)
+
+  # An unquoted field name is a dot-separated path. The dot is structural, not a
+  # name character, so `repeat` demands a segment after every dot and `a.` or
+  # `a..b` cannot parse. The leading lookahead keeps a value-shaped token such
+  # as `14.0.0` from being read as a field.
   field_name =
     [?0..?9, ?-]
     |> utf8_char()
     |> lookahead_not()
-    |> utf8_string([?a..?z, ?A..?Z, ?0..?9, ?_, ?-], min: 1)
-    |> unwrap_and_tag(:field)
+    |> concat(field_segment)
+    |> repeat(
+      "."
+      |> string()
+      |> ignore()
+      |> concat(field_segment)
+    )
+    |> tag(:field)
     |> label("field name")
+
+  # Quoting a field name makes it literal: its dots are characters rather than
+  # path separators, and it may hold anything but a quote.
+  quoted_field_name =
+    "\""
+    |> string()
+    |> ignore()
+    |> utf8_string([{:not, ?"}], min: 1)
+    |> ignore(string("\""))
+    |> unwrap_and_tag(:quoted_field)
+    |> label("quoted field name")
 
   quoted_value =
     "\""
@@ -204,7 +267,81 @@ defmodule KQL do
     |> choice()
     |> label("value")
 
-  value_list =
+  # A bracketed list delimits its elements with `,` and `]`, so its elements
+  # need a character set excluding those two. The parenthesised form needs no
+  # such thing: `(`, `)` and whitespace are all outside `unescaped_character`
+  # already, so `(a or b)` splits cleanly. Without the restriction, `[a,b]`
+  # parses as the single value `a,b]`.
+  #
+  # `unescaped_character` minus `,` (44) and `]` (93). A literal comma or `]`
+  # in an element must be escaped or quoted, matching how a literal paren
+  # already behaves inside `( ... )`.
+  bracket_unescaped_character =
+    [
+      ?!,
+      ?#..?',
+      # 43 (+) then 45-57 (- to 9), skipping 44 (,)
+      ?+,
+      ?-..?9,
+      ?;,
+      ?=,
+      ??..?[,
+      # 94-122 (^ to z), skipping 93 (]) and stopping before {
+      ?^..?z,
+      ?|,
+      ?~..0x10FFFF
+    ]
+    |> utf8_char()
+    |> label("unescaped character in a list")
+
+  bracket_unquoted_char =
+    choice([
+      escaped_character,
+      bracket_unescaped_character
+    ])
+
+  bracket_unquoted_value =
+    bracket_unquoted_char
+    |> times(min: 1)
+    |> reduce({List, :to_string, []})
+    |> unwrap_and_tag(:unquoted)
+    |> tag(:value)
+    |> label("unquoted list value")
+
+  bracket_glob_tail =
+    [
+      bracket_unquoted_char,
+      utf8_char([?*])
+    ]
+    |> choice()
+    |> repeat()
+
+  bracket_suffix_glob =
+    bracket_unquoted_char
+    |> times(min: 1)
+    |> utf8_char([?*])
+    |> concat(bracket_glob_tail)
+    |> reduce({List, :to_string, []})
+
+  bracket_prefix_glob =
+    [?*]
+    |> utf8_char()
+    |> concat(bracket_glob_tail)
+    |> reduce({List, :to_string, []})
+
+  bracket_glob_value =
+    [bracket_suffix_glob, bracket_prefix_glob]
+    |> choice()
+    |> unwrap_and_tag(:glob)
+    |> tag(:value)
+    |> label("glob list value")
+
+  bracket_value =
+    [quoted_value, bracket_glob_value, bracket_unquoted_value]
+    |> choice()
+    |> label("list value")
+
+  paren_value_list =
     "("
     |> string()
     |> ignore()
@@ -220,6 +357,36 @@ defmodule KQL do
     )
     |> ignore(optional_whitespace)
     |> ignore(string(")"))
+
+  bracket_value_list =
+    "["
+    |> string()
+    |> ignore()
+    |> ignore(optional_whitespace)
+    |> concat(bracket_value)
+    |> times(
+      optional_whitespace
+      |> ignore()
+      |> ignore(string(","))
+      |> ignore(optional_whitespace)
+      |> concat(bracket_value),
+      # min: 0 so a single-element list parses. The parenthesised form can
+      # require two because `(a)` is already a group expression; `[a]` has no
+      # such reading, and a generated query may well produce one element.
+      min: 0
+    )
+    |> ignore(optional_whitespace)
+    |> ignore(string("]"))
+    # `[`, `]` and `,` stay legal inside an unquoted value, so `[a]x` is a
+    # value that merely looks like a list with a suffix. Requiring no value
+    # character after the closing bracket makes such input fall back to
+    # `value` and parse exactly as it did before lists existed. Without this,
+    # every value with a list-shaped prefix would start erroring.
+    |> lookahead_not(choice([unquoted_char, utf8_char([?*])]))
+
+  value_list =
+    [paren_value_list, bracket_value_list]
+    |> choice()
     |> tag(:value_list)
     |> label("value list")
 
@@ -235,15 +402,40 @@ defmodule KQL do
     |> unwrap_and_tag(:operator)
     |> label("comparison operator")
 
+  # `{` and `}` are ordinary value characters, so `car:{make:alfa}` would
+  # otherwise parse as the value `{make:alfa}`. The braced form is tried first
+  # and `choice/1` backtracks, which is also what leaves `car:a{b}c` alone.
   defcombinatorp(
-    :base_expr,
-    field_name
+    :nested_expr,
+    [quoted_field_name, field_name]
+    |> choice()
+    |> ignore(optional_whitespace)
+    |> ignore(string(":"))
+    |> ignore(optional_whitespace)
+    |> ignore(string("{"))
+    |> ignore(optional_whitespace)
+    |> parsec(:or_expr)
+    |> ignore(optional_whitespace)
+    |> ignore(string("}"))
+    |> tag(:nested_group)
+    |> label("nested expression")
+  )
+
+  defcombinatorp(
+    :comparison_expr,
+    [quoted_field_name, field_name]
+    |> choice()
     |> ignore(optional_whitespace)
     |> concat(comparison_op)
     |> ignore(optional_whitespace)
     |> concat(choice([value_list, value]))
     |> tag(:comparison)
     |> label("comparison")
+  )
+
+  defcombinatorp(
+    :base_expr,
+    choice([parsec(:nested_expr), parsec(:comparison_expr)])
   )
 
   defcombinatorp(

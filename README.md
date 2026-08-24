@@ -21,20 +21,23 @@ Parser for a simplified version of the [Kibana query language](https://www.elast
 - Grouping expressions with `()`: `make:foo OR (make:bar AND model:bar)`
 - UTF-8 values: `make:苹果`
 - Glob values: `make:foo*`
-- Value lists: `make: (foo OR bar)`
+- Value lists: `make: (foo OR bar)`, `make: [foo, bar]`
+- Nested fields, dotted or braced: `first.second: foo` and
+  `first: { second: foo and third: bar }` both produce a `nested` node per path
+  segment, wrapping the expression at the leaf
+- Quoted field names: `"first.second": foo` is a literal field name — quoting
+  makes the dots characters rather than path separators
 
 ## What is missing?
 
-- Nested fields: `first.second: foo`
 - Matching multiple fields (glob values in field name): `make*:foo`
-- Querying nested fields: `make:{ first: foo and second: bar }`
 
 ## Installation
 
 ```elixir
 def deps do
   [
-    {:kql, "~> 0.1.0"}
+    {:kql, "~> 0.2.0"}
   ]
 end
 ```
@@ -57,7 +60,7 @@ iex> KQL.parse("make:foo")
   },
   "meta" => %{
     "original_query" => "make:foo",
-    "version" => "0.1.0"
+    "version" => "0.2.0"
   }
 }}
 ```
@@ -94,7 +97,101 @@ iex> KQL.parse("make:A* AND model:*X")
   },
   "meta" => %{
     "original_query" => "make:A* AND model:*X",
-    "version" => "0.1.0"
+    "version" => "0.2.0"
+  }
+}}
+```
+
+A dotted field name is a path, producing one `nested` node per dot with the
+comparison at the leaf:
+
+```elixir
+iex> KQL.parse("car.make:alfa")
+{:ok, %{
+  "ast" => %{
+    "type" => "nested",
+    "path" => "car",
+    "term" => %{
+      "type" => "comparison",
+      "field" => "make",
+      "operator" => "=",
+      "value" => %{
+        "type" => "value",
+        "term" => "alfa",
+        "glob" => false,
+        "quoted" => false
+      }
+    }
+  },
+  "meta" => %{
+    "original_query" => "car.make:alfa",
+    "version" => "0.2.0"
+  }
+}}
+```
+
+The braced form wraps a whole expression instead of a single comparison, so
+`car:{make:alfa}` and `car.make:alfa` produce the same AST:
+
+```elixir
+iex> KQL.parse("car:{make:alfa AND year>=2020}")
+{:ok, %{
+  "ast" => %{
+    "type" => "nested",
+    "path" => "car",
+    "term" => %{
+      "type" => "and",
+      "terms" => [%{
+        "type" => "comparison",
+        "field" => "make",
+        "operator" => "=",
+        "value" => %{
+          "type" => "value",
+          "term" => "alfa",
+          "glob" => false,
+          "quoted" => false
+        }
+      },
+      %{
+        "type" => "comparison",
+        "field" => "year",
+        "operator" => ">=",
+        "value" => %{
+          "type" => "value",
+          "term" => "2020",
+          "glob" => false,
+          "quoted" => false
+        }
+      }]
+    }
+  },
+  "meta" => %{
+    "original_query" => "car:{make:alfa AND year>=2020}",
+    "version" => "0.2.0"
+  }
+}}
+```
+
+Quoting a field name makes it literal, so its dots are characters rather than
+path separators and the result stays a plain `comparison`:
+
+```elixir
+iex> KQL.parse(~S|"car.make":alfa|)
+{:ok, %{
+  "ast" => %{
+    "type" => "comparison",
+    "field" => "car.make",
+    "operator" => "=",
+    "value" => %{
+      "type" => "value",
+      "term" => "alfa",
+      "glob" => false,
+      "quoted" => false
+    }
+  },
+  "meta" => %{
+    "original_query" => "\"car.make\":alfa",
+    "version" => "0.2.0"
   }
 }}
 ```
