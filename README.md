@@ -101,3 +101,97 @@ iex> KQL.parse("make:A* AND model:*X")
   }
 }}
 ```
+
+A dotted field name is a path, producing one `nested` node per dot with the
+comparison at the leaf:
+
+```elixir
+iex> KQL.parse("car.make:alfa")
+{:ok, %{
+  "ast" => %{
+    "type" => "nested",
+    "path" => "car",
+    "term" => %{
+      "type" => "comparison",
+      "field" => "make",
+      "operator" => "=",
+      "value" => %{
+        "type" => "value",
+        "term" => "alfa",
+        "glob" => false,
+        "quoted" => false
+      }
+    }
+  },
+  "meta" => %{
+    "original_query" => "car.make:alfa",
+    "version" => "0.2.0"
+  }
+}}
+```
+
+The braced form wraps a whole expression instead of a single comparison, so
+`car:{make:alfa}` and `car.make:alfa` produce the same AST:
+
+```elixir
+iex> KQL.parse("car:{make:alfa AND year>=2020}")
+{:ok, %{
+  "ast" => %{
+    "type" => "nested",
+    "path" => "car",
+    "term" => %{
+      "type" => "and",
+      "terms" => [%{
+        "type" => "comparison",
+        "field" => "make",
+        "operator" => "=",
+        "value" => %{
+          "type" => "value",
+          "term" => "alfa",
+          "glob" => false,
+          "quoted" => false
+        }
+      },
+      %{
+        "type" => "comparison",
+        "field" => "year",
+        "operator" => ">=",
+        "value" => %{
+          "type" => "value",
+          "term" => "2020",
+          "glob" => false,
+          "quoted" => false
+        }
+      }]
+    }
+  },
+  "meta" => %{
+    "original_query" => "car:{make:alfa AND year>=2020}",
+    "version" => "0.2.0"
+  }
+}}
+```
+
+Quoting a field name makes it literal, so its dots are characters rather than
+path separators and the result stays a plain `comparison`:
+
+```elixir
+iex> KQL.parse(~S|"car.make":alfa|)
+{:ok, %{
+  "ast" => %{
+    "type" => "comparison",
+    "field" => "car.make",
+    "operator" => "=",
+    "value" => %{
+      "type" => "value",
+      "term" => "alfa",
+      "glob" => false,
+      "quoted" => false
+    }
+  },
+  "meta" => %{
+    "original_query" => "\"car.make\":alfa",
+    "version" => "0.2.0"
+  }
+}}
+```
