@@ -21,11 +21,13 @@ Parser for a simplified version of the [Kibana query language](https://www.elast
 - Grouping expressions with `()`: `make:foo OR (make:bar AND model:bar)`
 - UTF-8 values: `make:苹果`
 - Glob values: `make:foo*`
-- Value lists: `make: (foo OR bar)`
+- Value lists: `make: (foo OR bar)`, `make: [foo, bar]`
+- Dotted field names: `first.second: foo`
 
 ## What is missing?
 
-- Nested fields: `first.second: foo`
+- Interpreting a dotted field name as a nested path. `first.second` parses as a
+  single field name; giving it meaning is left to the caller.
 - Matching multiple fields (glob values in field name): `make*:foo`
 - Querying nested fields: `make:{ first: foo and second: bar }`
 
@@ -34,7 +36,7 @@ Parser for a simplified version of the [Kibana query language](https://www.elast
 ```elixir
 def deps do
   [
-    {:kql, "~> 0.1.0"}
+    {:kql, "~> 0.2.0"}
   ]
 end
 ```
@@ -57,7 +59,7 @@ iex> KQL.parse("make:foo")
   },
   "meta" => %{
     "original_query" => "make:foo",
-    "version" => "0.1.0"
+    "version" => "0.2.0"
   }
 }}
 ```
@@ -94,7 +96,7 @@ iex> KQL.parse("make:A* AND model:*X")
   },
   "meta" => %{
     "original_query" => "make:A* AND model:*X",
-    "version" => "0.1.0"
+    "version" => "0.2.0"
   }
 }}
 ```
