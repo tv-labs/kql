@@ -253,7 +253,7 @@ defmodule KQL do
       {:ok, acc, rest, context, line, offset} ->
         or_expr__7(rest, acc, stack, context, line, offset)
 
-      {:error, _, _, _, _, _} = error ->
+      {:error, _, _, _, _, _} = _error ->
         [acc | stack] = stack
         or_expr__4(rest, acc, stack, context, line, offset)
     end
@@ -402,7 +402,7 @@ defmodule KQL do
       {:ok, acc, rest, context, line, offset} ->
         or_expr__22(rest, acc, stack, context, line, offset)
 
-      {:error, _, _, _, _, _} = error ->
+      {:error, _, _, _, _, _} = _error ->
         [acc | stack] = stack
         or_expr__4(rest, acc, stack, context, line, offset)
     end
@@ -554,7 +554,7 @@ defmodule KQL do
       {:ok, acc, rest, context, line, offset} ->
         or_expr__39(rest, acc, stack, context, line, offset)
 
-      {:error, _, _, _, _, _} = error ->
+      {:error, _, _, _, _, _} = _error ->
         or_expr__23(rest, acc, stack, context, line, offset)
     end
   end
@@ -627,7 +627,7 @@ defmodule KQL do
       {:ok, acc, rest, context, line, offset} ->
         and_expr__7(rest, acc, stack, context, line, offset)
 
-      {:error, _, _, _, _, _} = error ->
+      {:error, _, _, _, _, _} = _error ->
         [acc | stack] = stack
         and_expr__4(rest, acc, stack, context, line, offset)
     end
@@ -776,7 +776,7 @@ defmodule KQL do
       {:ok, acc, rest, context, line, offset} ->
         and_expr__22(rest, acc, stack, context, line, offset)
 
-      {:error, _, _, _, _, _} = error ->
+      {:error, _, _, _, _, _} = _error ->
         [acc | stack] = stack
         and_expr__4(rest, acc, stack, context, line, offset)
     end
@@ -928,7 +928,7 @@ defmodule KQL do
       {:ok, acc, rest, context, line, offset} ->
         and_expr__39(rest, acc, stack, context, line, offset)
 
-      {:error, _, _, _, _, _} = error ->
+      {:error, _, _, _, _, _} = _error ->
         and_expr__23(rest, acc, stack, context, line, offset)
     end
   end
@@ -1094,7 +1094,7 @@ defmodule KQL do
       {:ok, acc, rest, context, line, offset} ->
         not_expr__15(rest, acc, stack, context, line, offset)
 
-      {:error, _, _, _, _, _} = error ->
+      {:error, _, _, _, _, _} = _error ->
         [acc | stack] = stack
         not_expr__4(rest, acc, stack, context, line, offset)
     end
@@ -1198,7 +1198,7 @@ defmodule KQL do
       {:ok, acc, rest, context, line, offset} ->
         group_expr__14(rest, acc, stack, context, line, offset)
 
-      {:error, _, _, _, _, _} = error ->
+      {:error, _, _, _, _, _} = _error ->
         [acc | stack] = stack
         group_expr__4(rest, acc, stack, context, line, offset)
     end
