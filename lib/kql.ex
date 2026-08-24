@@ -1,5 +1,5 @@
 # Generated from lib/kql.ex.exs, do not edit.
-# Generated at 2026-08-24 00:21:05Z.
+# Generated at 2026-08-24 00:27:03Z.
 
 defmodule KQL do
   @external_resource "README.md"
@@ -2288,7 +2288,7 @@ defmodule KQL do
   end
 
   defp base_expr__94(rest, acc, stack, context, line, offset) do
-    base_expr__258(rest, [], [{rest, context, line, offset}, acc | stack], context, line, offset)
+    base_expr__267(rest, [], [{rest, context, line, offset}, acc | stack], context, line, offset)
   end
 
   defp base_expr__96(<<"[", rest::binary>>, acc, stack, context, comb__line, comb__offset) do
@@ -4063,33 +4063,126 @@ defmodule KQL do
     base_expr__92(rest, acc, stack, context, line, offset)
   end
 
-  defp base_expr__256(rest, acc, [_, previous_acc | stack], context, line, offset) do
+  defp base_expr__256(rest, acc, stack, context, line, offset) do
+    base_expr__257(rest, [], [{rest, acc, context, line, offset} | stack], context, line, offset)
+  end
+
+  defp base_expr__257(rest, acc, stack, context, line, offset) do
+    base_expr__263(rest, [], [{rest, context, line, offset}, acc | stack], context, line, offset)
+  end
+
+  defp base_expr__260(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+       when x0 === 42 do
+    base_expr__261(
+      rest,
+      [x0] ++ acc,
+      stack,
+      context,
+      comb__line,
+      comb__offset + byte_size(<<x0::utf8>>)
+    )
+  end
+
+  defp base_expr__260(rest, _acc, stack, context, line, offset) do
+    [_, acc | stack] = stack
+    base_expr__258(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__261(rest, acc, [_, previous_acc | stack], context, line, offset) do
+    base_expr__259(rest, acc ++ previous_acc, stack, context, line, offset)
+  end
+
+  defp base_expr__262(_, _, [{rest, context, line, offset} | _] = stack, _, _, _) do
+    base_expr__260(rest, [], stack, context, line, offset)
+  end
+
+  defp base_expr__263(
+         <<x0::utf8, x1::utf8, rest::binary>>,
+         acc,
+         stack,
+         context,
+         comb__line,
+         comb__offset
+       )
+       when x0 === 92 do
+    base_expr__264(
+      rest,
+      [x1] ++ acc,
+      stack,
+      context,
+      (
+        line = comb__line
+
+        case x1 do
+          10 ->
+            {elem(line, 0) + 1, comb__offset + byte_size(<<x0::utf8>>) + byte_size(<<x1::utf8>>)}
+
+          _ ->
+            line
+        end
+      ),
+      comb__offset + byte_size(<<x0::utf8>>) + byte_size(<<x1::utf8>>)
+    )
+  end
+
+  defp base_expr__263(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+       when x0 === 33 or (x0 >= 35 and x0 <= 39) or (x0 >= 43 and x0 <= 57) or x0 === 59 or
+              x0 === 61 or
+              (x0 >= 63 and x0 <= 91) or (x0 >= 93 and x0 <= 1_114_111) do
+    base_expr__264(
+      rest,
+      [x0] ++ acc,
+      stack,
+      context,
+      comb__line,
+      comb__offset + byte_size(<<x0::utf8>>)
+    )
+  end
+
+  defp base_expr__263(rest, acc, stack, context, line, offset) do
+    base_expr__262(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__264(rest, acc, [_, previous_acc | stack], context, line, offset) do
+    base_expr__259(rest, acc ++ previous_acc, stack, context, line, offset)
+  end
+
+  defp base_expr__259(_, _, [{rest, _acc, context, line, offset} | stack], _, _, _) do
+    [_, _, acc | stack] = stack
+    base_expr__92(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__258(_, _, [{rest, acc, context, line, offset} | stack], _, _, _) do
+    base_expr__265(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__265(rest, acc, [_, previous_acc | stack], context, line, offset) do
     base_expr__95(rest, acc ++ previous_acc, stack, context, line, offset)
   end
 
-  defp base_expr__257(_, _, [{rest, context, line, offset} | _] = stack, _, _, _) do
+  defp base_expr__266(_, _, [{rest, context, line, offset} | _] = stack, _, _, _) do
     base_expr__96(rest, [], stack, context, line, offset)
   end
 
-  defp base_expr__258(<<"(", rest::binary>>, acc, stack, context, comb__line, comb__offset) do
-    base_expr__259(rest, [] ++ acc, stack, context, comb__line, comb__offset + 1)
+  defp base_expr__267(<<"(", rest::binary>>, acc, stack, context, comb__line, comb__offset) do
+    base_expr__268(rest, [] ++ acc, stack, context, comb__line, comb__offset + 1)
   end
 
-  defp base_expr__258(rest, acc, stack, context, line, offset) do
-    base_expr__257(rest, acc, stack, context, line, offset)
+  defp base_expr__267(rest, acc, stack, context, line, offset) do
+    base_expr__266(rest, acc, stack, context, line, offset)
   end
 
-  defp base_expr__259(rest, acc, stack, context, line, offset) do
-    base_expr__260(rest, [], [acc | stack], context, line, offset)
+  defp base_expr__268(rest, acc, stack, context, line, offset) do
+    base_expr__269(rest, [], [acc | stack], context, line, offset)
   end
 
-  defp base_expr__260(rest, acc, stack, context, line, offset) do
-    base_expr__261(rest, [], [acc | stack], context, line, offset)
+  defp base_expr__269(rest, acc, stack, context, line, offset) do
+    base_expr__270(rest, [], [acc | stack], context, line, offset)
   end
 
-  defp base_expr__261(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+  defp base_expr__270(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
        when x0 === 32 or x0 === 9 or x0 === 10 or x0 === 13 do
-    base_expr__263(
+    base_expr__272(
       rest,
       acc,
       stack,
@@ -4106,41 +4199,41 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__261(rest, acc, stack, context, line, offset) do
-    base_expr__262(rest, acc, stack, context, line, offset)
+  defp base_expr__270(rest, acc, stack, context, line, offset) do
+    base_expr__271(rest, acc, stack, context, line, offset)
   end
 
-  defp base_expr__263(rest, acc, stack, context, line, offset) do
-    base_expr__261(rest, acc, stack, context, line, offset)
+  defp base_expr__272(rest, acc, stack, context, line, offset) do
+    base_expr__270(rest, acc, stack, context, line, offset)
   end
 
-  defp base_expr__262(rest, user_acc, [acc | stack], context, line, offset) do
+  defp base_expr__271(rest, user_acc, [acc | stack], context, line, offset) do
     _ = user_acc
-    base_expr__264(rest, acc, stack, context, line, offset)
+    base_expr__273(rest, acc, stack, context, line, offset)
   end
 
-  defp base_expr__264(rest, user_acc, [acc | stack], context, line, offset) do
+  defp base_expr__273(rest, user_acc, [acc | stack], context, line, offset) do
     _ = user_acc
-    base_expr__265(rest, [] ++ acc, stack, context, line, offset)
+    base_expr__274(rest, [] ++ acc, stack, context, line, offset)
   end
 
-  defp base_expr__265(rest, acc, stack, context, line, offset) do
-    base_expr__319(rest, [], [{rest, context, line, offset}, acc | stack], context, line, offset)
+  defp base_expr__274(rest, acc, stack, context, line, offset) do
+    base_expr__328(rest, [], [{rest, context, line, offset}, acc | stack], context, line, offset)
   end
 
-  defp base_expr__267(rest, acc, stack, context, line, offset) do
-    base_expr__268(rest, [], [acc | stack], context, line, offset)
+  defp base_expr__276(rest, acc, stack, context, line, offset) do
+    base_expr__277(rest, [], [acc | stack], context, line, offset)
   end
 
-  defp base_expr__268(rest, acc, stack, context, line, offset) do
-    base_expr__269(rest, [], [acc | stack], context, line, offset)
+  defp base_expr__277(rest, acc, stack, context, line, offset) do
+    base_expr__278(rest, [], [acc | stack], context, line, offset)
   end
 
-  defp base_expr__269(rest, acc, stack, context, line, offset) do
-    base_expr__270(rest, [], [acc | stack], context, line, offset)
+  defp base_expr__278(rest, acc, stack, context, line, offset) do
+    base_expr__279(rest, [], [acc | stack], context, line, offset)
   end
 
-  defp base_expr__270(
+  defp base_expr__279(
          <<x0::utf8, x1::utf8, rest::binary>>,
          acc,
          stack,
@@ -4149,7 +4242,7 @@ defmodule KQL do
          comb__offset
        )
        when x0 === 92 do
-    base_expr__271(
+    base_expr__280(
       rest,
       [x1] ++ acc,
       stack,
@@ -4169,11 +4262,11 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__270(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+  defp base_expr__279(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
        when x0 === 33 or (x0 >= 35 and x0 <= 39) or (x0 >= 43 and x0 <= 57) or x0 === 59 or
               x0 === 61 or
               (x0 >= 63 and x0 <= 91) or (x0 >= 93 and x0 <= 1_114_111) do
-    base_expr__271(
+    base_expr__280(
       rest,
       [x0] ++ acc,
       stack,
@@ -4183,16 +4276,16 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__270(rest, _acc, stack, context, line, offset) do
+  defp base_expr__279(rest, _acc, stack, context, line, offset) do
     [_, _, _, _, acc | stack] = stack
-    base_expr__257(rest, acc, stack, context, line, offset)
+    base_expr__266(rest, acc, stack, context, line, offset)
   end
 
-  defp base_expr__271(rest, acc, stack, context, line, offset) do
-    base_expr__273(rest, [], [{rest, acc, context, line, offset} | stack], context, line, offset)
+  defp base_expr__280(rest, acc, stack, context, line, offset) do
+    base_expr__282(rest, [], [{rest, acc, context, line, offset} | stack], context, line, offset)
   end
 
-  defp base_expr__273(
+  defp base_expr__282(
          <<x0::utf8, x1::utf8, rest::binary>>,
          acc,
          stack,
@@ -4201,7 +4294,7 @@ defmodule KQL do
          comb__offset
        )
        when x0 === 92 do
-    base_expr__274(
+    base_expr__283(
       rest,
       [x1] ++ acc,
       stack,
@@ -4221,11 +4314,11 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__273(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+  defp base_expr__282(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
        when x0 === 33 or (x0 >= 35 and x0 <= 39) or (x0 >= 43 and x0 <= 57) or x0 === 59 or
               x0 === 61 or
               (x0 >= 63 and x0 <= 91) or (x0 >= 93 and x0 <= 1_114_111) do
-    base_expr__274(
+    base_expr__283(
       rest,
       [x0] ++ acc,
       stack,
@@ -4235,15 +4328,15 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__273(rest, acc, stack, context, line, offset) do
-    base_expr__272(rest, acc, stack, context, line, offset)
+  defp base_expr__282(rest, acc, stack, context, line, offset) do
+    base_expr__281(rest, acc, stack, context, line, offset)
   end
 
-  defp base_expr__272(_, _, [{rest, acc, context, line, offset} | stack], _, _, _) do
-    base_expr__275(rest, acc, stack, context, line, offset)
+  defp base_expr__281(_, _, [{rest, acc, context, line, offset} | stack], _, _, _) do
+    base_expr__284(rest, acc, stack, context, line, offset)
   end
 
-  defp base_expr__274(
+  defp base_expr__283(
          inner_rest,
          inner_acc,
          [{rest, acc, context, line, offset} | stack],
@@ -4253,7 +4346,7 @@ defmodule KQL do
        ) do
     _ = {rest, acc, context, line, offset}
 
-    base_expr__273(
+    base_expr__282(
       inner_rest,
       [],
       [{inner_rest, inner_acc ++ acc, inner_context, inner_line, inner_offset} | stack],
@@ -4263,10 +4356,10 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__275(rest, user_acc, [acc | stack], context, line, offset) do
+  defp base_expr__284(rest, user_acc, [acc | stack], context, line, offset) do
     _ = user_acc
 
-    base_expr__276(
+    base_expr__285(
       rest,
       [List.to_string(:lists.reverse(user_acc))] ++ acc,
       stack,
@@ -4276,10 +4369,10 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__276(rest, user_acc, [acc | stack], context, line, offset) do
+  defp base_expr__285(rest, user_acc, [acc | stack], context, line, offset) do
     _ = user_acc
 
-    base_expr__277(
+    base_expr__286(
       rest,
       [
         unquoted:
@@ -4295,218 +4388,62 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__277(rest, user_acc, [acc | stack], context, line, offset) do
+  defp base_expr__286(rest, user_acc, [acc | stack], context, line, offset) do
     _ = user_acc
-    base_expr__278(rest, [value: :lists.reverse(user_acc)] ++ acc, stack, context, line, offset)
+    base_expr__287(rest, [value: :lists.reverse(user_acc)] ++ acc, stack, context, line, offset)
   end
 
-  defp base_expr__278(rest, acc, [_, previous_acc | stack], context, line, offset) do
-    base_expr__266(rest, acc ++ previous_acc, stack, context, line, offset)
+  defp base_expr__287(rest, acc, [_, previous_acc | stack], context, line, offset) do
+    base_expr__275(rest, acc ++ previous_acc, stack, context, line, offset)
   end
 
-  defp base_expr__279(_, _, [{rest, context, line, offset} | _] = stack, _, _, _) do
-    base_expr__267(rest, [], stack, context, line, offset)
+  defp base_expr__288(_, _, [{rest, context, line, offset} | _] = stack, _, _, _) do
+    base_expr__276(rest, [], stack, context, line, offset)
   end
 
-  defp base_expr__280(rest, acc, stack, context, line, offset) do
-    base_expr__281(rest, [], [acc | stack], context, line, offset)
+  defp base_expr__289(rest, acc, stack, context, line, offset) do
+    base_expr__290(rest, [], [acc | stack], context, line, offset)
   end
 
-  defp base_expr__281(rest, acc, stack, context, line, offset) do
-    base_expr__282(rest, [], [acc | stack], context, line, offset)
+  defp base_expr__290(rest, acc, stack, context, line, offset) do
+    base_expr__291(rest, [], [acc | stack], context, line, offset)
   end
 
-  defp base_expr__282(rest, acc, stack, context, line, offset) do
-    base_expr__298(rest, [], [{rest, context, line, offset}, acc | stack], context, line, offset)
-  end
-
-  defp base_expr__284(rest, acc, stack, context, line, offset) do
-    base_expr__285(rest, [], [acc | stack], context, line, offset)
-  end
-
-  defp base_expr__285(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
-       when x0 === 42 do
-    base_expr__286(
-      rest,
-      [x0] ++ acc,
-      stack,
-      context,
-      comb__line,
-      comb__offset + byte_size(<<x0::utf8>>)
-    )
-  end
-
-  defp base_expr__285(rest, _acc, stack, context, line, offset) do
-    [_, _, _, _, acc | stack] = stack
-    base_expr__279(rest, acc, stack, context, line, offset)
-  end
-
-  defp base_expr__286(rest, acc, stack, context, line, offset) do
-    base_expr__288(rest, [], [{rest, acc, context, line, offset} | stack], context, line, offset)
-  end
-
-  defp base_expr__288(rest, acc, stack, context, line, offset) do
-    base_expr__293(rest, [], [{rest, context, line, offset}, acc | stack], context, line, offset)
-  end
-
-  defp base_expr__290(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
-       when x0 === 42 do
-    base_expr__291(
-      rest,
-      [x0] ++ acc,
-      stack,
-      context,
-      comb__line,
-      comb__offset + byte_size(<<x0::utf8>>)
-    )
-  end
-
-  defp base_expr__290(rest, _acc, stack, context, line, offset) do
-    [_, acc | stack] = stack
-    base_expr__287(rest, acc, stack, context, line, offset)
-  end
-
-  defp base_expr__291(rest, acc, [_, previous_acc | stack], context, line, offset) do
-    base_expr__289(rest, acc ++ previous_acc, stack, context, line, offset)
-  end
-
-  defp base_expr__292(_, _, [{rest, context, line, offset} | _] = stack, _, _, _) do
-    base_expr__290(rest, [], stack, context, line, offset)
-  end
-
-  defp base_expr__293(
-         <<x0::utf8, x1::utf8, rest::binary>>,
-         acc,
-         stack,
-         context,
-         comb__line,
-         comb__offset
-       )
-       when x0 === 92 do
-    base_expr__294(
-      rest,
-      [x1] ++ acc,
-      stack,
-      context,
-      (
-        line = comb__line
-
-        case x1 do
-          10 ->
-            {elem(line, 0) + 1, comb__offset + byte_size(<<x0::utf8>>) + byte_size(<<x1::utf8>>)}
-
-          _ ->
-            line
-        end
-      ),
-      comb__offset + byte_size(<<x0::utf8>>) + byte_size(<<x1::utf8>>)
-    )
-  end
-
-  defp base_expr__293(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
-       when x0 === 33 or (x0 >= 35 and x0 <= 39) or (x0 >= 43 and x0 <= 57) or x0 === 59 or
-              x0 === 61 or
-              (x0 >= 63 and x0 <= 91) or (x0 >= 93 and x0 <= 1_114_111) do
-    base_expr__294(
-      rest,
-      [x0] ++ acc,
-      stack,
-      context,
-      comb__line,
-      comb__offset + byte_size(<<x0::utf8>>)
-    )
+  defp base_expr__291(rest, acc, stack, context, line, offset) do
+    base_expr__307(rest, [], [{rest, context, line, offset}, acc | stack], context, line, offset)
   end
 
   defp base_expr__293(rest, acc, stack, context, line, offset) do
-    base_expr__292(rest, acc, stack, context, line, offset)
+    base_expr__294(rest, [], [acc | stack], context, line, offset)
   end
 
-  defp base_expr__294(rest, acc, [_, previous_acc | stack], context, line, offset) do
-    base_expr__289(rest, acc ++ previous_acc, stack, context, line, offset)
-  end
-
-  defp base_expr__287(_, _, [{rest, acc, context, line, offset} | stack], _, _, _) do
-    base_expr__295(rest, acc, stack, context, line, offset)
-  end
-
-  defp base_expr__289(
-         inner_rest,
-         inner_acc,
-         [{rest, acc, context, line, offset} | stack],
-         inner_context,
-         inner_line,
-         inner_offset
-       ) do
-    _ = {rest, acc, context, line, offset}
-
-    base_expr__288(
-      inner_rest,
-      [],
-      [{inner_rest, inner_acc ++ acc, inner_context, inner_line, inner_offset} | stack],
-      inner_context,
-      inner_line,
-      inner_offset
-    )
-  end
-
-  defp base_expr__295(rest, user_acc, [acc | stack], context, line, offset) do
-    _ = user_acc
-
-    base_expr__296(
+  defp base_expr__294(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+       when x0 === 42 do
+    base_expr__295(
       rest,
-      [List.to_string(:lists.reverse(user_acc))] ++ acc,
+      [x0] ++ acc,
       stack,
       context,
-      line,
-      offset
+      comb__line,
+      comb__offset + byte_size(<<x0::utf8>>)
     )
   end
 
-  defp base_expr__296(rest, acc, [_, previous_acc | stack], context, line, offset) do
-    base_expr__283(rest, acc ++ previous_acc, stack, context, line, offset)
+  defp base_expr__294(rest, _acc, stack, context, line, offset) do
+    [_, _, _, _, acc | stack] = stack
+    base_expr__288(rest, acc, stack, context, line, offset)
   end
 
-  defp base_expr__297(_, _, [{rest, context, line, offset} | _] = stack, _, _, _) do
-    base_expr__284(rest, [], stack, context, line, offset)
+  defp base_expr__295(rest, acc, stack, context, line, offset) do
+    base_expr__297(rest, [], [{rest, acc, context, line, offset} | stack], context, line, offset)
   end
 
-  defp base_expr__298(rest, acc, stack, context, line, offset) do
-    base_expr__299(rest, [], [acc | stack], context, line, offset)
-  end
-
-  defp base_expr__299(
-         <<x0::utf8, x1::utf8, rest::binary>>,
-         acc,
-         stack,
-         context,
-         comb__line,
-         comb__offset
-       )
-       when x0 === 92 do
-    base_expr__300(
-      rest,
-      [x1] ++ acc,
-      stack,
-      context,
-      (
-        line = comb__line
-
-        case x1 do
-          10 ->
-            {elem(line, 0) + 1, comb__offset + byte_size(<<x0::utf8>>) + byte_size(<<x1::utf8>>)}
-
-          _ ->
-            line
-        end
-      ),
-      comb__offset + byte_size(<<x0::utf8>>) + byte_size(<<x1::utf8>>)
-    )
+  defp base_expr__297(rest, acc, stack, context, line, offset) do
+    base_expr__302(rest, [], [{rest, context, line, offset}, acc | stack], context, line, offset)
   end
 
   defp base_expr__299(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
-       when x0 === 33 or (x0 >= 35 and x0 <= 39) or (x0 >= 43 and x0 <= 57) or x0 === 59 or
-              x0 === 61 or
-              (x0 >= 63 and x0 <= 91) or (x0 >= 93 and x0 <= 1_114_111) do
+       when x0 === 42 do
     base_expr__300(
       rest,
       [x0] ++ acc,
@@ -4518,12 +4455,16 @@ defmodule KQL do
   end
 
   defp base_expr__299(rest, _acc, stack, context, line, offset) do
-    [acc | stack] = stack
-    base_expr__297(rest, acc, stack, context, line, offset)
+    [_, acc | stack] = stack
+    base_expr__296(rest, acc, stack, context, line, offset)
   end
 
-  defp base_expr__300(rest, acc, stack, context, line, offset) do
-    base_expr__302(rest, [], [{rest, acc, context, line, offset} | stack], context, line, offset)
+  defp base_expr__300(rest, acc, [_, previous_acc | stack], context, line, offset) do
+    base_expr__298(rest, acc ++ previous_acc, stack, context, line, offset)
+  end
+
+  defp base_expr__301(_, _, [{rest, context, line, offset} | _] = stack, _, _, _) do
+    base_expr__299(rest, [], stack, context, line, offset)
   end
 
   defp base_expr__302(
@@ -4573,11 +4514,15 @@ defmodule KQL do
     base_expr__301(rest, acc, stack, context, line, offset)
   end
 
-  defp base_expr__301(_, _, [{rest, acc, context, line, offset} | stack], _, _, _) do
+  defp base_expr__303(rest, acc, [_, previous_acc | stack], context, line, offset) do
+    base_expr__298(rest, acc ++ previous_acc, stack, context, line, offset)
+  end
+
+  defp base_expr__296(_, _, [{rest, acc, context, line, offset} | stack], _, _, _) do
     base_expr__304(rest, acc, stack, context, line, offset)
   end
 
-  defp base_expr__303(
+  defp base_expr__298(
          inner_rest,
          inner_acc,
          [{rest, acc, context, line, offset} | stack],
@@ -4587,7 +4532,7 @@ defmodule KQL do
        ) do
     _ = {rest, acc, context, line, offset}
 
-    base_expr__302(
+    base_expr__297(
       inner_rest,
       [],
       [{inner_rest, inner_acc ++ acc, inner_context, inner_line, inner_offset} | stack],
@@ -4597,57 +4542,32 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__304(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
-       when x0 === 42 do
+  defp base_expr__304(rest, user_acc, [acc | stack], context, line, offset) do
+    _ = user_acc
+
     base_expr__305(
       rest,
-      [x0] ++ acc,
+      [List.to_string(:lists.reverse(user_acc))] ++ acc,
       stack,
       context,
-      comb__line,
-      comb__offset + byte_size(<<x0::utf8>>)
+      line,
+      offset
     )
   end
 
-  defp base_expr__304(rest, _acc, stack, context, line, offset) do
-    [acc | stack] = stack
-    base_expr__297(rest, acc, stack, context, line, offset)
+  defp base_expr__305(rest, acc, [_, previous_acc | stack], context, line, offset) do
+    base_expr__292(rest, acc ++ previous_acc, stack, context, line, offset)
   end
 
-  defp base_expr__305(rest, acc, stack, context, line, offset) do
-    base_expr__307(rest, [], [{rest, acc, context, line, offset} | stack], context, line, offset)
+  defp base_expr__306(_, _, [{rest, context, line, offset} | _] = stack, _, _, _) do
+    base_expr__293(rest, [], stack, context, line, offset)
   end
 
   defp base_expr__307(rest, acc, stack, context, line, offset) do
-    base_expr__312(rest, [], [{rest, context, line, offset}, acc | stack], context, line, offset)
+    base_expr__308(rest, [], [acc | stack], context, line, offset)
   end
 
-  defp base_expr__309(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
-       when x0 === 42 do
-    base_expr__310(
-      rest,
-      [x0] ++ acc,
-      stack,
-      context,
-      comb__line,
-      comb__offset + byte_size(<<x0::utf8>>)
-    )
-  end
-
-  defp base_expr__309(rest, _acc, stack, context, line, offset) do
-    [_, acc | stack] = stack
-    base_expr__306(rest, acc, stack, context, line, offset)
-  end
-
-  defp base_expr__310(rest, acc, [_, previous_acc | stack], context, line, offset) do
-    base_expr__308(rest, acc ++ previous_acc, stack, context, line, offset)
-  end
-
-  defp base_expr__311(_, _, [{rest, context, line, offset} | _] = stack, _, _, _) do
-    base_expr__309(rest, [], stack, context, line, offset)
-  end
-
-  defp base_expr__312(
+  defp base_expr__308(
          <<x0::utf8, x1::utf8, rest::binary>>,
          acc,
          stack,
@@ -4656,7 +4576,7 @@ defmodule KQL do
          comb__offset
        )
        when x0 === 92 do
-    base_expr__313(
+    base_expr__309(
       rest,
       [x1] ++ acc,
       stack,
@@ -4676,11 +4596,11 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__312(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+  defp base_expr__308(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
        when x0 === 33 or (x0 >= 35 and x0 <= 39) or (x0 >= 43 and x0 <= 57) or x0 === 59 or
               x0 === 61 or
               (x0 >= 63 and x0 <= 91) or (x0 >= 93 and x0 <= 1_114_111) do
-    base_expr__313(
+    base_expr__309(
       rest,
       [x0] ++ acc,
       stack,
@@ -4690,19 +4610,67 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__312(rest, acc, stack, context, line, offset) do
-    base_expr__311(rest, acc, stack, context, line, offset)
+  defp base_expr__308(rest, _acc, stack, context, line, offset) do
+    [acc | stack] = stack
+    base_expr__306(rest, acc, stack, context, line, offset)
   end
 
-  defp base_expr__313(rest, acc, [_, previous_acc | stack], context, line, offset) do
-    base_expr__308(rest, acc ++ previous_acc, stack, context, line, offset)
+  defp base_expr__309(rest, acc, stack, context, line, offset) do
+    base_expr__311(rest, [], [{rest, acc, context, line, offset} | stack], context, line, offset)
   end
 
-  defp base_expr__306(_, _, [{rest, acc, context, line, offset} | stack], _, _, _) do
-    base_expr__314(rest, acc, stack, context, line, offset)
+  defp base_expr__311(
+         <<x0::utf8, x1::utf8, rest::binary>>,
+         acc,
+         stack,
+         context,
+         comb__line,
+         comb__offset
+       )
+       when x0 === 92 do
+    base_expr__312(
+      rest,
+      [x1] ++ acc,
+      stack,
+      context,
+      (
+        line = comb__line
+
+        case x1 do
+          10 ->
+            {elem(line, 0) + 1, comb__offset + byte_size(<<x0::utf8>>) + byte_size(<<x1::utf8>>)}
+
+          _ ->
+            line
+        end
+      ),
+      comb__offset + byte_size(<<x0::utf8>>) + byte_size(<<x1::utf8>>)
+    )
   end
 
-  defp base_expr__308(
+  defp base_expr__311(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+       when x0 === 33 or (x0 >= 35 and x0 <= 39) or (x0 >= 43 and x0 <= 57) or x0 === 59 or
+              x0 === 61 or
+              (x0 >= 63 and x0 <= 91) or (x0 >= 93 and x0 <= 1_114_111) do
+    base_expr__312(
+      rest,
+      [x0] ++ acc,
+      stack,
+      context,
+      comb__line,
+      comb__offset + byte_size(<<x0::utf8>>)
+    )
+  end
+
+  defp base_expr__311(rest, acc, stack, context, line, offset) do
+    base_expr__310(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__310(_, _, [{rest, acc, context, line, offset} | stack], _, _, _) do
+    base_expr__313(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__312(
          inner_rest,
          inner_acc,
          [{rest, acc, context, line, offset} | stack],
@@ -4712,7 +4680,7 @@ defmodule KQL do
        ) do
     _ = {rest, acc, context, line, offset}
 
-    base_expr__307(
+    base_expr__311(
       inner_rest,
       [],
       [{inner_rest, inner_acc ++ acc, inner_context, inner_line, inner_offset} | stack],
@@ -4722,10 +4690,135 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__314(rest, user_acc, [acc | stack], context, line, offset) do
+  defp base_expr__313(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+       when x0 === 42 do
+    base_expr__314(
+      rest,
+      [x0] ++ acc,
+      stack,
+      context,
+      comb__line,
+      comb__offset + byte_size(<<x0::utf8>>)
+    )
+  end
+
+  defp base_expr__313(rest, _acc, stack, context, line, offset) do
+    [acc | stack] = stack
+    base_expr__306(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__314(rest, acc, stack, context, line, offset) do
+    base_expr__316(rest, [], [{rest, acc, context, line, offset} | stack], context, line, offset)
+  end
+
+  defp base_expr__316(rest, acc, stack, context, line, offset) do
+    base_expr__321(rest, [], [{rest, context, line, offset}, acc | stack], context, line, offset)
+  end
+
+  defp base_expr__318(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+       when x0 === 42 do
+    base_expr__319(
+      rest,
+      [x0] ++ acc,
+      stack,
+      context,
+      comb__line,
+      comb__offset + byte_size(<<x0::utf8>>)
+    )
+  end
+
+  defp base_expr__318(rest, _acc, stack, context, line, offset) do
+    [_, acc | stack] = stack
+    base_expr__315(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__319(rest, acc, [_, previous_acc | stack], context, line, offset) do
+    base_expr__317(rest, acc ++ previous_acc, stack, context, line, offset)
+  end
+
+  defp base_expr__320(_, _, [{rest, context, line, offset} | _] = stack, _, _, _) do
+    base_expr__318(rest, [], stack, context, line, offset)
+  end
+
+  defp base_expr__321(
+         <<x0::utf8, x1::utf8, rest::binary>>,
+         acc,
+         stack,
+         context,
+         comb__line,
+         comb__offset
+       )
+       when x0 === 92 do
+    base_expr__322(
+      rest,
+      [x1] ++ acc,
+      stack,
+      context,
+      (
+        line = comb__line
+
+        case x1 do
+          10 ->
+            {elem(line, 0) + 1, comb__offset + byte_size(<<x0::utf8>>) + byte_size(<<x1::utf8>>)}
+
+          _ ->
+            line
+        end
+      ),
+      comb__offset + byte_size(<<x0::utf8>>) + byte_size(<<x1::utf8>>)
+    )
+  end
+
+  defp base_expr__321(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+       when x0 === 33 or (x0 >= 35 and x0 <= 39) or (x0 >= 43 and x0 <= 57) or x0 === 59 or
+              x0 === 61 or
+              (x0 >= 63 and x0 <= 91) or (x0 >= 93 and x0 <= 1_114_111) do
+    base_expr__322(
+      rest,
+      [x0] ++ acc,
+      stack,
+      context,
+      comb__line,
+      comb__offset + byte_size(<<x0::utf8>>)
+    )
+  end
+
+  defp base_expr__321(rest, acc, stack, context, line, offset) do
+    base_expr__320(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__322(rest, acc, [_, previous_acc | stack], context, line, offset) do
+    base_expr__317(rest, acc ++ previous_acc, stack, context, line, offset)
+  end
+
+  defp base_expr__315(_, _, [{rest, acc, context, line, offset} | stack], _, _, _) do
+    base_expr__323(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__317(
+         inner_rest,
+         inner_acc,
+         [{rest, acc, context, line, offset} | stack],
+         inner_context,
+         inner_line,
+         inner_offset
+       ) do
+    _ = {rest, acc, context, line, offset}
+
+    base_expr__316(
+      inner_rest,
+      [],
+      [{inner_rest, inner_acc ++ acc, inner_context, inner_line, inner_offset} | stack],
+      inner_context,
+      inner_line,
+      inner_offset
+    )
+  end
+
+  defp base_expr__323(rest, user_acc, [acc | stack], context, line, offset) do
     _ = user_acc
 
-    base_expr__315(
+    base_expr__324(
       rest,
       [List.to_string(:lists.reverse(user_acc))] ++ acc,
       stack,
@@ -4735,14 +4828,14 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__315(rest, acc, [_, previous_acc | stack], context, line, offset) do
-    base_expr__283(rest, acc ++ previous_acc, stack, context, line, offset)
+  defp base_expr__324(rest, acc, [_, previous_acc | stack], context, line, offset) do
+    base_expr__292(rest, acc ++ previous_acc, stack, context, line, offset)
   end
 
-  defp base_expr__283(rest, user_acc, [acc | stack], context, line, offset) do
+  defp base_expr__292(rest, user_acc, [acc | stack], context, line, offset) do
     _ = user_acc
 
-    base_expr__316(
+    base_expr__325(
       rest,
       [
         glob:
@@ -4758,43 +4851,43 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__316(rest, user_acc, [acc | stack], context, line, offset) do
+  defp base_expr__325(rest, user_acc, [acc | stack], context, line, offset) do
     _ = user_acc
-    base_expr__317(rest, [value: :lists.reverse(user_acc)] ++ acc, stack, context, line, offset)
+    base_expr__326(rest, [value: :lists.reverse(user_acc)] ++ acc, stack, context, line, offset)
   end
 
-  defp base_expr__317(rest, acc, [_, previous_acc | stack], context, line, offset) do
-    base_expr__266(rest, acc ++ previous_acc, stack, context, line, offset)
+  defp base_expr__326(rest, acc, [_, previous_acc | stack], context, line, offset) do
+    base_expr__275(rest, acc ++ previous_acc, stack, context, line, offset)
   end
 
-  defp base_expr__318(_, _, [{rest, context, line, offset} | _] = stack, _, _, _) do
-    base_expr__280(rest, [], stack, context, line, offset)
+  defp base_expr__327(_, _, [{rest, context, line, offset} | _] = stack, _, _, _) do
+    base_expr__289(rest, [], stack, context, line, offset)
   end
 
-  defp base_expr__319(rest, acc, stack, context, line, offset) do
-    base_expr__320(rest, [], [acc | stack], context, line, offset)
+  defp base_expr__328(rest, acc, stack, context, line, offset) do
+    base_expr__329(rest, [], [acc | stack], context, line, offset)
   end
 
-  defp base_expr__320(rest, acc, stack, context, line, offset) do
-    base_expr__321(rest, [], [acc | stack], context, line, offset)
+  defp base_expr__329(rest, acc, stack, context, line, offset) do
+    base_expr__330(rest, [], [acc | stack], context, line, offset)
   end
 
-  defp base_expr__321(<<"\"", rest::binary>>, acc, stack, context, comb__line, comb__offset) do
-    base_expr__322(rest, [] ++ acc, stack, context, comb__line, comb__offset + 1)
+  defp base_expr__330(<<"\"", rest::binary>>, acc, stack, context, comb__line, comb__offset) do
+    base_expr__331(rest, [] ++ acc, stack, context, comb__line, comb__offset + 1)
   end
 
-  defp base_expr__321(rest, _acc, stack, context, line, offset) do
+  defp base_expr__330(rest, _acc, stack, context, line, offset) do
     [_, acc | stack] = stack
-    base_expr__318(rest, acc, stack, context, line, offset)
+    base_expr__327(rest, acc, stack, context, line, offset)
   end
 
-  defp base_expr__322(rest, acc, stack, context, line, offset) do
-    base_expr__323(rest, [], [acc | stack], context, line, offset)
+  defp base_expr__331(rest, acc, stack, context, line, offset) do
+    base_expr__332(rest, [], [acc | stack], context, line, offset)
   end
 
-  defp base_expr__323(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+  defp base_expr__332(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
        when x0 !== 34 do
-    base_expr__324(
+    base_expr__333(
       rest,
       [<<x0::utf8>>] ++ acc,
       stack,
@@ -4811,125 +4904,16 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__323(rest, _acc, stack, context, line, offset) do
-    [_, _, acc | stack] = stack
-    base_expr__318(rest, acc, stack, context, line, offset)
-  end
-
-  defp base_expr__324(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
-       when x0 !== 34 do
-    base_expr__326(
-      rest,
-      [x0] ++ acc,
-      stack,
-      context,
-      (
-        line = comb__line
-
-        case x0 do
-          10 -> {elem(line, 0) + 1, comb__offset + byte_size(<<x0::utf8>>)}
-          _ -> line
-        end
-      ),
-      comb__offset + byte_size(<<x0::utf8>>)
-    )
-  end
-
-  defp base_expr__324(rest, acc, stack, context, line, offset) do
-    base_expr__325(rest, acc, stack, context, line, offset)
-  end
-
-  defp base_expr__326(rest, acc, stack, context, line, offset) do
-    base_expr__324(rest, acc, stack, context, line, offset)
-  end
-
-  defp base_expr__325(rest, user_acc, [acc | stack], context, line, offset) do
-    _ = user_acc
-
-    base_expr__327(
-      rest,
-      [List.to_string(:lists.reverse(user_acc))] ++ acc,
-      stack,
-      context,
-      line,
-      offset
-    )
-  end
-
-  defp base_expr__327(<<"\"", rest::binary>>, acc, stack, context, comb__line, comb__offset) do
-    base_expr__328(rest, [] ++ acc, stack, context, comb__line, comb__offset + 1)
-  end
-
-  defp base_expr__327(rest, _acc, stack, context, line, offset) do
-    [_, acc | stack] = stack
-    base_expr__318(rest, acc, stack, context, line, offset)
-  end
-
-  defp base_expr__328(rest, user_acc, [acc | stack], context, line, offset) do
-    _ = user_acc
-
-    base_expr__329(
-      rest,
-      [
-        quoted:
-          case :lists.reverse(user_acc) do
-            [one] -> one
-            many -> raise "unwrap_and_tag/3 expected a single token, got: #{inspect(many)}"
-          end
-      ] ++ acc,
-      stack,
-      context,
-      line,
-      offset
-    )
-  end
-
-  defp base_expr__329(rest, user_acc, [acc | stack], context, line, offset) do
-    _ = user_acc
-    base_expr__330(rest, [value: :lists.reverse(user_acc)] ++ acc, stack, context, line, offset)
-  end
-
-  defp base_expr__330(rest, acc, [_, previous_acc | stack], context, line, offset) do
-    base_expr__266(rest, acc ++ previous_acc, stack, context, line, offset)
-  end
-
-  defp base_expr__266(rest, acc, stack, context, line, offset) do
-    base_expr__331(rest, [], [acc | stack], context, line, offset)
-  end
-
-  defp base_expr__331(rest, acc, stack, context, line, offset) do
-    base_expr__332(rest, [], [acc | stack], context, line, offset)
-  end
-
-  defp base_expr__332(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
-       when x0 === 32 or x0 === 9 or x0 === 10 or x0 === 13 do
-    base_expr__333(
-      rest,
-      acc,
-      stack,
-      context,
-      (
-        line = comb__line
-
-        case x0 do
-          10 -> {elem(line, 0) + 1, comb__offset + byte_size(<<x0::utf8>>)}
-          _ -> line
-        end
-      ),
-      comb__offset + byte_size(<<x0::utf8>>)
-    )
-  end
-
   defp base_expr__332(rest, _acc, stack, context, line, offset) do
-    [_, acc | stack] = stack
-    base_expr__257(rest, acc, stack, context, line, offset)
+    [_, _, acc | stack] = stack
+    base_expr__327(rest, acc, stack, context, line, offset)
   end
 
   defp base_expr__333(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
-       when x0 === 32 or x0 === 9 or x0 === 10 or x0 === 13 do
+       when x0 !== 34 do
     base_expr__335(
       rest,
-      acc,
+      [x0] ++ acc,
       stack,
       context,
       (
@@ -4954,15 +4938,124 @@ defmodule KQL do
 
   defp base_expr__334(rest, user_acc, [acc | stack], context, line, offset) do
     _ = user_acc
-    base_expr__336(rest, acc, stack, context, line, offset)
+
+    base_expr__336(
+      rest,
+      [List.to_string(:lists.reverse(user_acc))] ++ acc,
+      stack,
+      context,
+      line,
+      offset
+    )
   end
 
-  defp base_expr__336(rest, user_acc, [acc | stack], context, line, offset) do
+  defp base_expr__336(<<"\"", rest::binary>>, acc, stack, context, comb__line, comb__offset) do
+    base_expr__337(rest, [] ++ acc, stack, context, comb__line, comb__offset + 1)
+  end
+
+  defp base_expr__336(rest, _acc, stack, context, line, offset) do
+    [_, acc | stack] = stack
+    base_expr__327(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__337(rest, user_acc, [acc | stack], context, line, offset) do
     _ = user_acc
-    base_expr__337(rest, [] ++ acc, stack, context, line, offset)
+
+    base_expr__338(
+      rest,
+      [
+        quoted:
+          case :lists.reverse(user_acc) do
+            [one] -> one
+            many -> raise "unwrap_and_tag/3 expected a single token, got: #{inspect(many)}"
+          end
+      ] ++ acc,
+      stack,
+      context,
+      line,
+      offset
+    )
   end
 
-  defp base_expr__337(
+  defp base_expr__338(rest, user_acc, [acc | stack], context, line, offset) do
+    _ = user_acc
+    base_expr__339(rest, [value: :lists.reverse(user_acc)] ++ acc, stack, context, line, offset)
+  end
+
+  defp base_expr__339(rest, acc, [_, previous_acc | stack], context, line, offset) do
+    base_expr__275(rest, acc ++ previous_acc, stack, context, line, offset)
+  end
+
+  defp base_expr__275(rest, acc, stack, context, line, offset) do
+    base_expr__340(rest, [], [acc | stack], context, line, offset)
+  end
+
+  defp base_expr__340(rest, acc, stack, context, line, offset) do
+    base_expr__341(rest, [], [acc | stack], context, line, offset)
+  end
+
+  defp base_expr__341(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+       when x0 === 32 or x0 === 9 or x0 === 10 or x0 === 13 do
+    base_expr__342(
+      rest,
+      acc,
+      stack,
+      context,
+      (
+        line = comb__line
+
+        case x0 do
+          10 -> {elem(line, 0) + 1, comb__offset + byte_size(<<x0::utf8>>)}
+          _ -> line
+        end
+      ),
+      comb__offset + byte_size(<<x0::utf8>>)
+    )
+  end
+
+  defp base_expr__341(rest, _acc, stack, context, line, offset) do
+    [_, acc | stack] = stack
+    base_expr__266(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__342(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+       when x0 === 32 or x0 === 9 or x0 === 10 or x0 === 13 do
+    base_expr__344(
+      rest,
+      acc,
+      stack,
+      context,
+      (
+        line = comb__line
+
+        case x0 do
+          10 -> {elem(line, 0) + 1, comb__offset + byte_size(<<x0::utf8>>)}
+          _ -> line
+        end
+      ),
+      comb__offset + byte_size(<<x0::utf8>>)
+    )
+  end
+
+  defp base_expr__342(rest, acc, stack, context, line, offset) do
+    base_expr__343(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__344(rest, acc, stack, context, line, offset) do
+    base_expr__342(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__343(rest, user_acc, [acc | stack], context, line, offset) do
+    _ = user_acc
+    base_expr__345(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__345(rest, user_acc, [acc | stack], context, line, offset) do
+    _ = user_acc
+    base_expr__346(rest, [] ++ acc, stack, context, line, offset)
+  end
+
+  defp base_expr__346(
          <<x0::utf8, x1::utf8, rest::binary>>,
          acc,
          stack,
@@ -4971,7 +5064,7 @@ defmodule KQL do
          comb__offset
        )
        when (x0 === 111 or x0 === 79) and (x1 === 114 or x1 === 82) do
-    base_expr__338(
+    base_expr__347(
       rest,
       [] ++ acc,
       stack,
@@ -4981,81 +5074,8 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__337(rest, acc, stack, context, line, offset) do
-    base_expr__257(rest, acc, stack, context, line, offset)
-  end
-
-  defp base_expr__338(rest, acc, stack, context, line, offset) do
-    base_expr__339(rest, [], [acc | stack], context, line, offset)
-  end
-
-  defp base_expr__339(rest, acc, stack, context, line, offset) do
-    base_expr__340(rest, [], [acc | stack], context, line, offset)
-  end
-
-  defp base_expr__340(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
-       when x0 === 32 or x0 === 9 or x0 === 10 or x0 === 13 do
-    base_expr__341(
-      rest,
-      acc,
-      stack,
-      context,
-      (
-        line = comb__line
-
-        case x0 do
-          10 -> {elem(line, 0) + 1, comb__offset + byte_size(<<x0::utf8>>)}
-          _ -> line
-        end
-      ),
-      comb__offset + byte_size(<<x0::utf8>>)
-    )
-  end
-
-  defp base_expr__340(rest, _acc, stack, context, line, offset) do
-    [_, acc | stack] = stack
-    base_expr__257(rest, acc, stack, context, line, offset)
-  end
-
-  defp base_expr__341(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
-       when x0 === 32 or x0 === 9 or x0 === 10 or x0 === 13 do
-    base_expr__343(
-      rest,
-      acc,
-      stack,
-      context,
-      (
-        line = comb__line
-
-        case x0 do
-          10 -> {elem(line, 0) + 1, comb__offset + byte_size(<<x0::utf8>>)}
-          _ -> line
-        end
-      ),
-      comb__offset + byte_size(<<x0::utf8>>)
-    )
-  end
-
-  defp base_expr__341(rest, acc, stack, context, line, offset) do
-    base_expr__342(rest, acc, stack, context, line, offset)
-  end
-
-  defp base_expr__343(rest, acc, stack, context, line, offset) do
-    base_expr__341(rest, acc, stack, context, line, offset)
-  end
-
-  defp base_expr__342(rest, user_acc, [acc | stack], context, line, offset) do
-    _ = user_acc
-    base_expr__344(rest, acc, stack, context, line, offset)
-  end
-
-  defp base_expr__344(rest, user_acc, [acc | stack], context, line, offset) do
-    _ = user_acc
-    base_expr__345(rest, [] ++ acc, stack, context, line, offset)
-  end
-
-  defp base_expr__345(rest, acc, stack, context, line, offset) do
-    base_expr__399(rest, [], [{rest, context, line, offset}, acc | stack], context, line, offset)
+  defp base_expr__346(rest, acc, stack, context, line, offset) do
+    base_expr__266(rest, acc, stack, context, line, offset)
   end
 
   defp base_expr__347(rest, acc, stack, context, line, offset) do
@@ -5066,63 +5086,84 @@ defmodule KQL do
     base_expr__349(rest, [], [acc | stack], context, line, offset)
   end
 
-  defp base_expr__349(rest, acc, stack, context, line, offset) do
-    base_expr__350(rest, [], [acc | stack], context, line, offset)
-  end
-
-  defp base_expr__350(
-         <<x0::utf8, x1::utf8, rest::binary>>,
-         acc,
-         stack,
-         context,
-         comb__line,
-         comb__offset
-       )
-       when x0 === 92 do
-    base_expr__351(
+  defp base_expr__349(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+       when x0 === 32 or x0 === 9 or x0 === 10 or x0 === 13 do
+    base_expr__350(
       rest,
-      [x1] ++ acc,
+      acc,
       stack,
       context,
       (
         line = comb__line
 
-        case x1 do
-          10 ->
-            {elem(line, 0) + 1, comb__offset + byte_size(<<x0::utf8>>) + byte_size(<<x1::utf8>>)}
-
-          _ ->
-            line
+        case x0 do
+          10 -> {elem(line, 0) + 1, comb__offset + byte_size(<<x0::utf8>>)}
+          _ -> line
         end
       ),
-      comb__offset + byte_size(<<x0::utf8>>) + byte_size(<<x1::utf8>>)
+      comb__offset + byte_size(<<x0::utf8>>)
     )
+  end
+
+  defp base_expr__349(rest, _acc, stack, context, line, offset) do
+    [_, acc | stack] = stack
+    base_expr__266(rest, acc, stack, context, line, offset)
   end
 
   defp base_expr__350(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
-       when x0 === 33 or (x0 >= 35 and x0 <= 39) or (x0 >= 43 and x0 <= 57) or x0 === 59 or
-              x0 === 61 or
-              (x0 >= 63 and x0 <= 91) or (x0 >= 93 and x0 <= 1_114_111) do
-    base_expr__351(
+       when x0 === 32 or x0 === 9 or x0 === 10 or x0 === 13 do
+    base_expr__352(
       rest,
-      [x0] ++ acc,
+      acc,
       stack,
       context,
-      comb__line,
+      (
+        line = comb__line
+
+        case x0 do
+          10 -> {elem(line, 0) + 1, comb__offset + byte_size(<<x0::utf8>>)}
+          _ -> line
+        end
+      ),
       comb__offset + byte_size(<<x0::utf8>>)
     )
   end
 
-  defp base_expr__350(rest, _acc, stack, context, line, offset) do
-    [_, _, _, _, acc | stack] = stack
-    base_expr__257(rest, acc, stack, context, line, offset)
+  defp base_expr__350(rest, acc, stack, context, line, offset) do
+    base_expr__351(rest, acc, stack, context, line, offset)
   end
 
-  defp base_expr__351(rest, acc, stack, context, line, offset) do
-    base_expr__353(rest, [], [{rest, acc, context, line, offset} | stack], context, line, offset)
+  defp base_expr__352(rest, acc, stack, context, line, offset) do
+    base_expr__350(rest, acc, stack, context, line, offset)
   end
 
-  defp base_expr__353(
+  defp base_expr__351(rest, user_acc, [acc | stack], context, line, offset) do
+    _ = user_acc
+    base_expr__353(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__353(rest, user_acc, [acc | stack], context, line, offset) do
+    _ = user_acc
+    base_expr__354(rest, [] ++ acc, stack, context, line, offset)
+  end
+
+  defp base_expr__354(rest, acc, stack, context, line, offset) do
+    base_expr__408(rest, [], [{rest, context, line, offset}, acc | stack], context, line, offset)
+  end
+
+  defp base_expr__356(rest, acc, stack, context, line, offset) do
+    base_expr__357(rest, [], [acc | stack], context, line, offset)
+  end
+
+  defp base_expr__357(rest, acc, stack, context, line, offset) do
+    base_expr__358(rest, [], [acc | stack], context, line, offset)
+  end
+
+  defp base_expr__358(rest, acc, stack, context, line, offset) do
+    base_expr__359(rest, [], [acc | stack], context, line, offset)
+  end
+
+  defp base_expr__359(
          <<x0::utf8, x1::utf8, rest::binary>>,
          acc,
          stack,
@@ -5131,7 +5172,7 @@ defmodule KQL do
          comb__offset
        )
        when x0 === 92 do
-    base_expr__354(
+    base_expr__360(
       rest,
       [x1] ++ acc,
       stack,
@@ -5151,11 +5192,11 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__353(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+  defp base_expr__359(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
        when x0 === 33 or (x0 >= 35 and x0 <= 39) or (x0 >= 43 and x0 <= 57) or x0 === 59 or
               x0 === 61 or
               (x0 >= 63 and x0 <= 91) or (x0 >= 93 and x0 <= 1_114_111) do
-    base_expr__354(
+    base_expr__360(
       rest,
       [x0] ++ acc,
       stack,
@@ -5165,15 +5206,67 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__353(rest, acc, stack, context, line, offset) do
-    base_expr__352(rest, acc, stack, context, line, offset)
+  defp base_expr__359(rest, _acc, stack, context, line, offset) do
+    [_, _, _, _, acc | stack] = stack
+    base_expr__266(rest, acc, stack, context, line, offset)
   end
 
-  defp base_expr__352(_, _, [{rest, acc, context, line, offset} | stack], _, _, _) do
-    base_expr__355(rest, acc, stack, context, line, offset)
+  defp base_expr__360(rest, acc, stack, context, line, offset) do
+    base_expr__362(rest, [], [{rest, acc, context, line, offset} | stack], context, line, offset)
   end
 
-  defp base_expr__354(
+  defp base_expr__362(
+         <<x0::utf8, x1::utf8, rest::binary>>,
+         acc,
+         stack,
+         context,
+         comb__line,
+         comb__offset
+       )
+       when x0 === 92 do
+    base_expr__363(
+      rest,
+      [x1] ++ acc,
+      stack,
+      context,
+      (
+        line = comb__line
+
+        case x1 do
+          10 ->
+            {elem(line, 0) + 1, comb__offset + byte_size(<<x0::utf8>>) + byte_size(<<x1::utf8>>)}
+
+          _ ->
+            line
+        end
+      ),
+      comb__offset + byte_size(<<x0::utf8>>) + byte_size(<<x1::utf8>>)
+    )
+  end
+
+  defp base_expr__362(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+       when x0 === 33 or (x0 >= 35 and x0 <= 39) or (x0 >= 43 and x0 <= 57) or x0 === 59 or
+              x0 === 61 or
+              (x0 >= 63 and x0 <= 91) or (x0 >= 93 and x0 <= 1_114_111) do
+    base_expr__363(
+      rest,
+      [x0] ++ acc,
+      stack,
+      context,
+      comb__line,
+      comb__offset + byte_size(<<x0::utf8>>)
+    )
+  end
+
+  defp base_expr__362(rest, acc, stack, context, line, offset) do
+    base_expr__361(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__361(_, _, [{rest, acc, context, line, offset} | stack], _, _, _) do
+    base_expr__364(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__363(
          inner_rest,
          inner_acc,
          [{rest, acc, context, line, offset} | stack],
@@ -5183,7 +5276,7 @@ defmodule KQL do
        ) do
     _ = {rest, acc, context, line, offset}
 
-    base_expr__353(
+    base_expr__362(
       inner_rest,
       [],
       [{inner_rest, inner_acc ++ acc, inner_context, inner_line, inner_offset} | stack],
@@ -5193,10 +5286,10 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__355(rest, user_acc, [acc | stack], context, line, offset) do
+  defp base_expr__364(rest, user_acc, [acc | stack], context, line, offset) do
     _ = user_acc
 
-    base_expr__356(
+    base_expr__365(
       rest,
       [List.to_string(:lists.reverse(user_acc))] ++ acc,
       stack,
@@ -5206,10 +5299,10 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__356(rest, user_acc, [acc | stack], context, line, offset) do
+  defp base_expr__365(rest, user_acc, [acc | stack], context, line, offset) do
     _ = user_acc
 
-    base_expr__357(
+    base_expr__366(
       rest,
       [
         unquoted:
@@ -5225,218 +5318,62 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__357(rest, user_acc, [acc | stack], context, line, offset) do
+  defp base_expr__366(rest, user_acc, [acc | stack], context, line, offset) do
     _ = user_acc
-    base_expr__358(rest, [value: :lists.reverse(user_acc)] ++ acc, stack, context, line, offset)
+    base_expr__367(rest, [value: :lists.reverse(user_acc)] ++ acc, stack, context, line, offset)
   end
 
-  defp base_expr__358(rest, acc, [_, previous_acc | stack], context, line, offset) do
-    base_expr__346(rest, acc ++ previous_acc, stack, context, line, offset)
+  defp base_expr__367(rest, acc, [_, previous_acc | stack], context, line, offset) do
+    base_expr__355(rest, acc ++ previous_acc, stack, context, line, offset)
   end
 
-  defp base_expr__359(_, _, [{rest, context, line, offset} | _] = stack, _, _, _) do
-    base_expr__347(rest, [], stack, context, line, offset)
+  defp base_expr__368(_, _, [{rest, context, line, offset} | _] = stack, _, _, _) do
+    base_expr__356(rest, [], stack, context, line, offset)
   end
 
-  defp base_expr__360(rest, acc, stack, context, line, offset) do
-    base_expr__361(rest, [], [acc | stack], context, line, offset)
+  defp base_expr__369(rest, acc, stack, context, line, offset) do
+    base_expr__370(rest, [], [acc | stack], context, line, offset)
   end
 
-  defp base_expr__361(rest, acc, stack, context, line, offset) do
-    base_expr__362(rest, [], [acc | stack], context, line, offset)
+  defp base_expr__370(rest, acc, stack, context, line, offset) do
+    base_expr__371(rest, [], [acc | stack], context, line, offset)
   end
 
-  defp base_expr__362(rest, acc, stack, context, line, offset) do
-    base_expr__378(rest, [], [{rest, context, line, offset}, acc | stack], context, line, offset)
-  end
-
-  defp base_expr__364(rest, acc, stack, context, line, offset) do
-    base_expr__365(rest, [], [acc | stack], context, line, offset)
-  end
-
-  defp base_expr__365(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
-       when x0 === 42 do
-    base_expr__366(
-      rest,
-      [x0] ++ acc,
-      stack,
-      context,
-      comb__line,
-      comb__offset + byte_size(<<x0::utf8>>)
-    )
-  end
-
-  defp base_expr__365(rest, _acc, stack, context, line, offset) do
-    [_, _, _, _, acc | stack] = stack
-    base_expr__359(rest, acc, stack, context, line, offset)
-  end
-
-  defp base_expr__366(rest, acc, stack, context, line, offset) do
-    base_expr__368(rest, [], [{rest, acc, context, line, offset} | stack], context, line, offset)
-  end
-
-  defp base_expr__368(rest, acc, stack, context, line, offset) do
-    base_expr__373(rest, [], [{rest, context, line, offset}, acc | stack], context, line, offset)
-  end
-
-  defp base_expr__370(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
-       when x0 === 42 do
-    base_expr__371(
-      rest,
-      [x0] ++ acc,
-      stack,
-      context,
-      comb__line,
-      comb__offset + byte_size(<<x0::utf8>>)
-    )
-  end
-
-  defp base_expr__370(rest, _acc, stack, context, line, offset) do
-    [_, acc | stack] = stack
-    base_expr__367(rest, acc, stack, context, line, offset)
-  end
-
-  defp base_expr__371(rest, acc, [_, previous_acc | stack], context, line, offset) do
-    base_expr__369(rest, acc ++ previous_acc, stack, context, line, offset)
-  end
-
-  defp base_expr__372(_, _, [{rest, context, line, offset} | _] = stack, _, _, _) do
-    base_expr__370(rest, [], stack, context, line, offset)
-  end
-
-  defp base_expr__373(
-         <<x0::utf8, x1::utf8, rest::binary>>,
-         acc,
-         stack,
-         context,
-         comb__line,
-         comb__offset
-       )
-       when x0 === 92 do
-    base_expr__374(
-      rest,
-      [x1] ++ acc,
-      stack,
-      context,
-      (
-        line = comb__line
-
-        case x1 do
-          10 ->
-            {elem(line, 0) + 1, comb__offset + byte_size(<<x0::utf8>>) + byte_size(<<x1::utf8>>)}
-
-          _ ->
-            line
-        end
-      ),
-      comb__offset + byte_size(<<x0::utf8>>) + byte_size(<<x1::utf8>>)
-    )
-  end
-
-  defp base_expr__373(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
-       when x0 === 33 or (x0 >= 35 and x0 <= 39) or (x0 >= 43 and x0 <= 57) or x0 === 59 or
-              x0 === 61 or
-              (x0 >= 63 and x0 <= 91) or (x0 >= 93 and x0 <= 1_114_111) do
-    base_expr__374(
-      rest,
-      [x0] ++ acc,
-      stack,
-      context,
-      comb__line,
-      comb__offset + byte_size(<<x0::utf8>>)
-    )
+  defp base_expr__371(rest, acc, stack, context, line, offset) do
+    base_expr__387(rest, [], [{rest, context, line, offset}, acc | stack], context, line, offset)
   end
 
   defp base_expr__373(rest, acc, stack, context, line, offset) do
-    base_expr__372(rest, acc, stack, context, line, offset)
+    base_expr__374(rest, [], [acc | stack], context, line, offset)
   end
 
-  defp base_expr__374(rest, acc, [_, previous_acc | stack], context, line, offset) do
-    base_expr__369(rest, acc ++ previous_acc, stack, context, line, offset)
-  end
-
-  defp base_expr__367(_, _, [{rest, acc, context, line, offset} | stack], _, _, _) do
-    base_expr__375(rest, acc, stack, context, line, offset)
-  end
-
-  defp base_expr__369(
-         inner_rest,
-         inner_acc,
-         [{rest, acc, context, line, offset} | stack],
-         inner_context,
-         inner_line,
-         inner_offset
-       ) do
-    _ = {rest, acc, context, line, offset}
-
-    base_expr__368(
-      inner_rest,
-      [],
-      [{inner_rest, inner_acc ++ acc, inner_context, inner_line, inner_offset} | stack],
-      inner_context,
-      inner_line,
-      inner_offset
-    )
-  end
-
-  defp base_expr__375(rest, user_acc, [acc | stack], context, line, offset) do
-    _ = user_acc
-
-    base_expr__376(
+  defp base_expr__374(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+       when x0 === 42 do
+    base_expr__375(
       rest,
-      [List.to_string(:lists.reverse(user_acc))] ++ acc,
+      [x0] ++ acc,
       stack,
       context,
-      line,
-      offset
+      comb__line,
+      comb__offset + byte_size(<<x0::utf8>>)
     )
   end
 
-  defp base_expr__376(rest, acc, [_, previous_acc | stack], context, line, offset) do
-    base_expr__363(rest, acc ++ previous_acc, stack, context, line, offset)
+  defp base_expr__374(rest, _acc, stack, context, line, offset) do
+    [_, _, _, _, acc | stack] = stack
+    base_expr__368(rest, acc, stack, context, line, offset)
   end
 
-  defp base_expr__377(_, _, [{rest, context, line, offset} | _] = stack, _, _, _) do
-    base_expr__364(rest, [], stack, context, line, offset)
+  defp base_expr__375(rest, acc, stack, context, line, offset) do
+    base_expr__377(rest, [], [{rest, acc, context, line, offset} | stack], context, line, offset)
   end
 
-  defp base_expr__378(rest, acc, stack, context, line, offset) do
-    base_expr__379(rest, [], [acc | stack], context, line, offset)
-  end
-
-  defp base_expr__379(
-         <<x0::utf8, x1::utf8, rest::binary>>,
-         acc,
-         stack,
-         context,
-         comb__line,
-         comb__offset
-       )
-       when x0 === 92 do
-    base_expr__380(
-      rest,
-      [x1] ++ acc,
-      stack,
-      context,
-      (
-        line = comb__line
-
-        case x1 do
-          10 ->
-            {elem(line, 0) + 1, comb__offset + byte_size(<<x0::utf8>>) + byte_size(<<x1::utf8>>)}
-
-          _ ->
-            line
-        end
-      ),
-      comb__offset + byte_size(<<x0::utf8>>) + byte_size(<<x1::utf8>>)
-    )
+  defp base_expr__377(rest, acc, stack, context, line, offset) do
+    base_expr__382(rest, [], [{rest, context, line, offset}, acc | stack], context, line, offset)
   end
 
   defp base_expr__379(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
-       when x0 === 33 or (x0 >= 35 and x0 <= 39) or (x0 >= 43 and x0 <= 57) or x0 === 59 or
-              x0 === 61 or
-              (x0 >= 63 and x0 <= 91) or (x0 >= 93 and x0 <= 1_114_111) do
+       when x0 === 42 do
     base_expr__380(
       rest,
       [x0] ++ acc,
@@ -5448,12 +5385,16 @@ defmodule KQL do
   end
 
   defp base_expr__379(rest, _acc, stack, context, line, offset) do
-    [acc | stack] = stack
-    base_expr__377(rest, acc, stack, context, line, offset)
+    [_, acc | stack] = stack
+    base_expr__376(rest, acc, stack, context, line, offset)
   end
 
-  defp base_expr__380(rest, acc, stack, context, line, offset) do
-    base_expr__382(rest, [], [{rest, acc, context, line, offset} | stack], context, line, offset)
+  defp base_expr__380(rest, acc, [_, previous_acc | stack], context, line, offset) do
+    base_expr__378(rest, acc ++ previous_acc, stack, context, line, offset)
+  end
+
+  defp base_expr__381(_, _, [{rest, context, line, offset} | _] = stack, _, _, _) do
+    base_expr__379(rest, [], stack, context, line, offset)
   end
 
   defp base_expr__382(
@@ -5503,11 +5444,15 @@ defmodule KQL do
     base_expr__381(rest, acc, stack, context, line, offset)
   end
 
-  defp base_expr__381(_, _, [{rest, acc, context, line, offset} | stack], _, _, _) do
+  defp base_expr__383(rest, acc, [_, previous_acc | stack], context, line, offset) do
+    base_expr__378(rest, acc ++ previous_acc, stack, context, line, offset)
+  end
+
+  defp base_expr__376(_, _, [{rest, acc, context, line, offset} | stack], _, _, _) do
     base_expr__384(rest, acc, stack, context, line, offset)
   end
 
-  defp base_expr__383(
+  defp base_expr__378(
          inner_rest,
          inner_acc,
          [{rest, acc, context, line, offset} | stack],
@@ -5517,7 +5462,7 @@ defmodule KQL do
        ) do
     _ = {rest, acc, context, line, offset}
 
-    base_expr__382(
+    base_expr__377(
       inner_rest,
       [],
       [{inner_rest, inner_acc ++ acc, inner_context, inner_line, inner_offset} | stack],
@@ -5527,57 +5472,32 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__384(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
-       when x0 === 42 do
+  defp base_expr__384(rest, user_acc, [acc | stack], context, line, offset) do
+    _ = user_acc
+
     base_expr__385(
       rest,
-      [x0] ++ acc,
+      [List.to_string(:lists.reverse(user_acc))] ++ acc,
       stack,
       context,
-      comb__line,
-      comb__offset + byte_size(<<x0::utf8>>)
+      line,
+      offset
     )
   end
 
-  defp base_expr__384(rest, _acc, stack, context, line, offset) do
-    [acc | stack] = stack
-    base_expr__377(rest, acc, stack, context, line, offset)
+  defp base_expr__385(rest, acc, [_, previous_acc | stack], context, line, offset) do
+    base_expr__372(rest, acc ++ previous_acc, stack, context, line, offset)
   end
 
-  defp base_expr__385(rest, acc, stack, context, line, offset) do
-    base_expr__387(rest, [], [{rest, acc, context, line, offset} | stack], context, line, offset)
+  defp base_expr__386(_, _, [{rest, context, line, offset} | _] = stack, _, _, _) do
+    base_expr__373(rest, [], stack, context, line, offset)
   end
 
   defp base_expr__387(rest, acc, stack, context, line, offset) do
-    base_expr__392(rest, [], [{rest, context, line, offset}, acc | stack], context, line, offset)
+    base_expr__388(rest, [], [acc | stack], context, line, offset)
   end
 
-  defp base_expr__389(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
-       when x0 === 42 do
-    base_expr__390(
-      rest,
-      [x0] ++ acc,
-      stack,
-      context,
-      comb__line,
-      comb__offset + byte_size(<<x0::utf8>>)
-    )
-  end
-
-  defp base_expr__389(rest, _acc, stack, context, line, offset) do
-    [_, acc | stack] = stack
-    base_expr__386(rest, acc, stack, context, line, offset)
-  end
-
-  defp base_expr__390(rest, acc, [_, previous_acc | stack], context, line, offset) do
-    base_expr__388(rest, acc ++ previous_acc, stack, context, line, offset)
-  end
-
-  defp base_expr__391(_, _, [{rest, context, line, offset} | _] = stack, _, _, _) do
-    base_expr__389(rest, [], stack, context, line, offset)
-  end
-
-  defp base_expr__392(
+  defp base_expr__388(
          <<x0::utf8, x1::utf8, rest::binary>>,
          acc,
          stack,
@@ -5586,7 +5506,7 @@ defmodule KQL do
          comb__offset
        )
        when x0 === 92 do
-    base_expr__393(
+    base_expr__389(
       rest,
       [x1] ++ acc,
       stack,
@@ -5606,11 +5526,11 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__392(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+  defp base_expr__388(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
        when x0 === 33 or (x0 >= 35 and x0 <= 39) or (x0 >= 43 and x0 <= 57) or x0 === 59 or
               x0 === 61 or
               (x0 >= 63 and x0 <= 91) or (x0 >= 93 and x0 <= 1_114_111) do
-    base_expr__393(
+    base_expr__389(
       rest,
       [x0] ++ acc,
       stack,
@@ -5620,19 +5540,67 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__392(rest, acc, stack, context, line, offset) do
-    base_expr__391(rest, acc, stack, context, line, offset)
+  defp base_expr__388(rest, _acc, stack, context, line, offset) do
+    [acc | stack] = stack
+    base_expr__386(rest, acc, stack, context, line, offset)
   end
 
-  defp base_expr__393(rest, acc, [_, previous_acc | stack], context, line, offset) do
-    base_expr__388(rest, acc ++ previous_acc, stack, context, line, offset)
+  defp base_expr__389(rest, acc, stack, context, line, offset) do
+    base_expr__391(rest, [], [{rest, acc, context, line, offset} | stack], context, line, offset)
   end
 
-  defp base_expr__386(_, _, [{rest, acc, context, line, offset} | stack], _, _, _) do
-    base_expr__394(rest, acc, stack, context, line, offset)
+  defp base_expr__391(
+         <<x0::utf8, x1::utf8, rest::binary>>,
+         acc,
+         stack,
+         context,
+         comb__line,
+         comb__offset
+       )
+       when x0 === 92 do
+    base_expr__392(
+      rest,
+      [x1] ++ acc,
+      stack,
+      context,
+      (
+        line = comb__line
+
+        case x1 do
+          10 ->
+            {elem(line, 0) + 1, comb__offset + byte_size(<<x0::utf8>>) + byte_size(<<x1::utf8>>)}
+
+          _ ->
+            line
+        end
+      ),
+      comb__offset + byte_size(<<x0::utf8>>) + byte_size(<<x1::utf8>>)
+    )
   end
 
-  defp base_expr__388(
+  defp base_expr__391(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+       when x0 === 33 or (x0 >= 35 and x0 <= 39) or (x0 >= 43 and x0 <= 57) or x0 === 59 or
+              x0 === 61 or
+              (x0 >= 63 and x0 <= 91) or (x0 >= 93 and x0 <= 1_114_111) do
+    base_expr__392(
+      rest,
+      [x0] ++ acc,
+      stack,
+      context,
+      comb__line,
+      comb__offset + byte_size(<<x0::utf8>>)
+    )
+  end
+
+  defp base_expr__391(rest, acc, stack, context, line, offset) do
+    base_expr__390(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__390(_, _, [{rest, acc, context, line, offset} | stack], _, _, _) do
+    base_expr__393(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__392(
          inner_rest,
          inner_acc,
          [{rest, acc, context, line, offset} | stack],
@@ -5642,7 +5610,7 @@ defmodule KQL do
        ) do
     _ = {rest, acc, context, line, offset}
 
-    base_expr__387(
+    base_expr__391(
       inner_rest,
       [],
       [{inner_rest, inner_acc ++ acc, inner_context, inner_line, inner_offset} | stack],
@@ -5652,10 +5620,135 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__394(rest, user_acc, [acc | stack], context, line, offset) do
+  defp base_expr__393(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+       when x0 === 42 do
+    base_expr__394(
+      rest,
+      [x0] ++ acc,
+      stack,
+      context,
+      comb__line,
+      comb__offset + byte_size(<<x0::utf8>>)
+    )
+  end
+
+  defp base_expr__393(rest, _acc, stack, context, line, offset) do
+    [acc | stack] = stack
+    base_expr__386(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__394(rest, acc, stack, context, line, offset) do
+    base_expr__396(rest, [], [{rest, acc, context, line, offset} | stack], context, line, offset)
+  end
+
+  defp base_expr__396(rest, acc, stack, context, line, offset) do
+    base_expr__401(rest, [], [{rest, context, line, offset}, acc | stack], context, line, offset)
+  end
+
+  defp base_expr__398(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+       when x0 === 42 do
+    base_expr__399(
+      rest,
+      [x0] ++ acc,
+      stack,
+      context,
+      comb__line,
+      comb__offset + byte_size(<<x0::utf8>>)
+    )
+  end
+
+  defp base_expr__398(rest, _acc, stack, context, line, offset) do
+    [_, acc | stack] = stack
+    base_expr__395(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__399(rest, acc, [_, previous_acc | stack], context, line, offset) do
+    base_expr__397(rest, acc ++ previous_acc, stack, context, line, offset)
+  end
+
+  defp base_expr__400(_, _, [{rest, context, line, offset} | _] = stack, _, _, _) do
+    base_expr__398(rest, [], stack, context, line, offset)
+  end
+
+  defp base_expr__401(
+         <<x0::utf8, x1::utf8, rest::binary>>,
+         acc,
+         stack,
+         context,
+         comb__line,
+         comb__offset
+       )
+       when x0 === 92 do
+    base_expr__402(
+      rest,
+      [x1] ++ acc,
+      stack,
+      context,
+      (
+        line = comb__line
+
+        case x1 do
+          10 ->
+            {elem(line, 0) + 1, comb__offset + byte_size(<<x0::utf8>>) + byte_size(<<x1::utf8>>)}
+
+          _ ->
+            line
+        end
+      ),
+      comb__offset + byte_size(<<x0::utf8>>) + byte_size(<<x1::utf8>>)
+    )
+  end
+
+  defp base_expr__401(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+       when x0 === 33 or (x0 >= 35 and x0 <= 39) or (x0 >= 43 and x0 <= 57) or x0 === 59 or
+              x0 === 61 or
+              (x0 >= 63 and x0 <= 91) or (x0 >= 93 and x0 <= 1_114_111) do
+    base_expr__402(
+      rest,
+      [x0] ++ acc,
+      stack,
+      context,
+      comb__line,
+      comb__offset + byte_size(<<x0::utf8>>)
+    )
+  end
+
+  defp base_expr__401(rest, acc, stack, context, line, offset) do
+    base_expr__400(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__402(rest, acc, [_, previous_acc | stack], context, line, offset) do
+    base_expr__397(rest, acc ++ previous_acc, stack, context, line, offset)
+  end
+
+  defp base_expr__395(_, _, [{rest, acc, context, line, offset} | stack], _, _, _) do
+    base_expr__403(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__397(
+         inner_rest,
+         inner_acc,
+         [{rest, acc, context, line, offset} | stack],
+         inner_context,
+         inner_line,
+         inner_offset
+       ) do
+    _ = {rest, acc, context, line, offset}
+
+    base_expr__396(
+      inner_rest,
+      [],
+      [{inner_rest, inner_acc ++ acc, inner_context, inner_line, inner_offset} | stack],
+      inner_context,
+      inner_line,
+      inner_offset
+    )
+  end
+
+  defp base_expr__403(rest, user_acc, [acc | stack], context, line, offset) do
     _ = user_acc
 
-    base_expr__395(
+    base_expr__404(
       rest,
       [List.to_string(:lists.reverse(user_acc))] ++ acc,
       stack,
@@ -5665,14 +5758,14 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__395(rest, acc, [_, previous_acc | stack], context, line, offset) do
-    base_expr__363(rest, acc ++ previous_acc, stack, context, line, offset)
+  defp base_expr__404(rest, acc, [_, previous_acc | stack], context, line, offset) do
+    base_expr__372(rest, acc ++ previous_acc, stack, context, line, offset)
   end
 
-  defp base_expr__363(rest, user_acc, [acc | stack], context, line, offset) do
+  defp base_expr__372(rest, user_acc, [acc | stack], context, line, offset) do
     _ = user_acc
 
-    base_expr__396(
+    base_expr__405(
       rest,
       [
         glob:
@@ -5688,43 +5781,43 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__396(rest, user_acc, [acc | stack], context, line, offset) do
+  defp base_expr__405(rest, user_acc, [acc | stack], context, line, offset) do
     _ = user_acc
-    base_expr__397(rest, [value: :lists.reverse(user_acc)] ++ acc, stack, context, line, offset)
+    base_expr__406(rest, [value: :lists.reverse(user_acc)] ++ acc, stack, context, line, offset)
   end
 
-  defp base_expr__397(rest, acc, [_, previous_acc | stack], context, line, offset) do
-    base_expr__346(rest, acc ++ previous_acc, stack, context, line, offset)
+  defp base_expr__406(rest, acc, [_, previous_acc | stack], context, line, offset) do
+    base_expr__355(rest, acc ++ previous_acc, stack, context, line, offset)
   end
 
-  defp base_expr__398(_, _, [{rest, context, line, offset} | _] = stack, _, _, _) do
-    base_expr__360(rest, [], stack, context, line, offset)
+  defp base_expr__407(_, _, [{rest, context, line, offset} | _] = stack, _, _, _) do
+    base_expr__369(rest, [], stack, context, line, offset)
   end
 
-  defp base_expr__399(rest, acc, stack, context, line, offset) do
-    base_expr__400(rest, [], [acc | stack], context, line, offset)
+  defp base_expr__408(rest, acc, stack, context, line, offset) do
+    base_expr__409(rest, [], [acc | stack], context, line, offset)
   end
 
-  defp base_expr__400(rest, acc, stack, context, line, offset) do
-    base_expr__401(rest, [], [acc | stack], context, line, offset)
+  defp base_expr__409(rest, acc, stack, context, line, offset) do
+    base_expr__410(rest, [], [acc | stack], context, line, offset)
   end
 
-  defp base_expr__401(<<"\"", rest::binary>>, acc, stack, context, comb__line, comb__offset) do
-    base_expr__402(rest, [] ++ acc, stack, context, comb__line, comb__offset + 1)
+  defp base_expr__410(<<"\"", rest::binary>>, acc, stack, context, comb__line, comb__offset) do
+    base_expr__411(rest, [] ++ acc, stack, context, comb__line, comb__offset + 1)
   end
 
-  defp base_expr__401(rest, _acc, stack, context, line, offset) do
+  defp base_expr__410(rest, _acc, stack, context, line, offset) do
     [_, acc | stack] = stack
-    base_expr__398(rest, acc, stack, context, line, offset)
+    base_expr__407(rest, acc, stack, context, line, offset)
   end
 
-  defp base_expr__402(rest, acc, stack, context, line, offset) do
-    base_expr__403(rest, [], [acc | stack], context, line, offset)
+  defp base_expr__411(rest, acc, stack, context, line, offset) do
+    base_expr__412(rest, [], [acc | stack], context, line, offset)
   end
 
-  defp base_expr__403(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+  defp base_expr__412(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
        when x0 !== 34 do
-    base_expr__404(
+    base_expr__413(
       rest,
       [<<x0::utf8>>] ++ acc,
       stack,
@@ -5741,14 +5834,14 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__403(rest, _acc, stack, context, line, offset) do
+  defp base_expr__412(rest, _acc, stack, context, line, offset) do
     [_, _, acc | stack] = stack
-    base_expr__398(rest, acc, stack, context, line, offset)
+    base_expr__407(rest, acc, stack, context, line, offset)
   end
 
-  defp base_expr__404(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+  defp base_expr__413(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
        when x0 !== 34 do
-    base_expr__406(
+    base_expr__415(
       rest,
       [x0] ++ acc,
       stack,
@@ -5765,18 +5858,18 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__404(rest, acc, stack, context, line, offset) do
-    base_expr__405(rest, acc, stack, context, line, offset)
+  defp base_expr__413(rest, acc, stack, context, line, offset) do
+    base_expr__414(rest, acc, stack, context, line, offset)
   end
 
-  defp base_expr__406(rest, acc, stack, context, line, offset) do
-    base_expr__404(rest, acc, stack, context, line, offset)
+  defp base_expr__415(rest, acc, stack, context, line, offset) do
+    base_expr__413(rest, acc, stack, context, line, offset)
   end
 
-  defp base_expr__405(rest, user_acc, [acc | stack], context, line, offset) do
+  defp base_expr__414(rest, user_acc, [acc | stack], context, line, offset) do
     _ = user_acc
 
-    base_expr__407(
+    base_expr__416(
       rest,
       [List.to_string(:lists.reverse(user_acc))] ++ acc,
       stack,
@@ -5786,19 +5879,19 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__407(<<"\"", rest::binary>>, acc, stack, context, comb__line, comb__offset) do
-    base_expr__408(rest, [] ++ acc, stack, context, comb__line, comb__offset + 1)
+  defp base_expr__416(<<"\"", rest::binary>>, acc, stack, context, comb__line, comb__offset) do
+    base_expr__417(rest, [] ++ acc, stack, context, comb__line, comb__offset + 1)
   end
 
-  defp base_expr__407(rest, _acc, stack, context, line, offset) do
+  defp base_expr__416(rest, _acc, stack, context, line, offset) do
     [_, acc | stack] = stack
-    base_expr__398(rest, acc, stack, context, line, offset)
+    base_expr__407(rest, acc, stack, context, line, offset)
   end
 
-  defp base_expr__408(rest, user_acc, [acc | stack], context, line, offset) do
+  defp base_expr__417(rest, user_acc, [acc | stack], context, line, offset) do
     _ = user_acc
 
-    base_expr__409(
+    base_expr__418(
       rest,
       [
         quoted:
@@ -5814,89 +5907,89 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__409(rest, user_acc, [acc | stack], context, line, offset) do
-    _ = user_acc
-    base_expr__410(rest, [value: :lists.reverse(user_acc)] ++ acc, stack, context, line, offset)
-  end
-
-  defp base_expr__410(rest, acc, [_, previous_acc | stack], context, line, offset) do
-    base_expr__346(rest, acc ++ previous_acc, stack, context, line, offset)
-  end
-
-  defp base_expr__346(rest, acc, stack, context, line, offset) do
-    base_expr__412(rest, [], [{rest, acc, context, line, offset} | stack], context, line, offset)
-  end
-
-  defp base_expr__412(rest, acc, stack, context, line, offset) do
-    base_expr__413(rest, [], [acc | stack], context, line, offset)
-  end
-
-  defp base_expr__413(rest, acc, stack, context, line, offset) do
-    base_expr__414(rest, [], [acc | stack], context, line, offset)
-  end
-
-  defp base_expr__414(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
-       when x0 === 32 or x0 === 9 or x0 === 10 or x0 === 13 do
-    base_expr__415(
-      rest,
-      acc,
-      stack,
-      context,
-      (
-        line = comb__line
-
-        case x0 do
-          10 -> {elem(line, 0) + 1, comb__offset + byte_size(<<x0::utf8>>)}
-          _ -> line
-        end
-      ),
-      comb__offset + byte_size(<<x0::utf8>>)
-    )
-  end
-
-  defp base_expr__414(rest, _acc, stack, context, line, offset) do
-    [_, acc | stack] = stack
-    base_expr__411(rest, acc, stack, context, line, offset)
-  end
-
-  defp base_expr__415(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
-       when x0 === 32 or x0 === 9 or x0 === 10 or x0 === 13 do
-    base_expr__417(
-      rest,
-      acc,
-      stack,
-      context,
-      (
-        line = comb__line
-
-        case x0 do
-          10 -> {elem(line, 0) + 1, comb__offset + byte_size(<<x0::utf8>>)}
-          _ -> line
-        end
-      ),
-      comb__offset + byte_size(<<x0::utf8>>)
-    )
-  end
-
-  defp base_expr__415(rest, acc, stack, context, line, offset) do
-    base_expr__416(rest, acc, stack, context, line, offset)
-  end
-
-  defp base_expr__417(rest, acc, stack, context, line, offset) do
-    base_expr__415(rest, acc, stack, context, line, offset)
-  end
-
-  defp base_expr__416(rest, user_acc, [acc | stack], context, line, offset) do
-    _ = user_acc
-    base_expr__418(rest, acc, stack, context, line, offset)
-  end
-
   defp base_expr__418(rest, user_acc, [acc | stack], context, line, offset) do
     _ = user_acc
-    base_expr__419(rest, [] ++ acc, stack, context, line, offset)
+    base_expr__419(rest, [value: :lists.reverse(user_acc)] ++ acc, stack, context, line, offset)
   end
 
-  defp base_expr__419(
+  defp base_expr__419(rest, acc, [_, previous_acc | stack], context, line, offset) do
+    base_expr__355(rest, acc ++ previous_acc, stack, context, line, offset)
+  end
+
+  defp base_expr__355(rest, acc, stack, context, line, offset) do
+    base_expr__421(rest, [], [{rest, acc, context, line, offset} | stack], context, line, offset)
+  end
+
+  defp base_expr__421(rest, acc, stack, context, line, offset) do
+    base_expr__422(rest, [], [acc | stack], context, line, offset)
+  end
+
+  defp base_expr__422(rest, acc, stack, context, line, offset) do
+    base_expr__423(rest, [], [acc | stack], context, line, offset)
+  end
+
+  defp base_expr__423(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+       when x0 === 32 or x0 === 9 or x0 === 10 or x0 === 13 do
+    base_expr__424(
+      rest,
+      acc,
+      stack,
+      context,
+      (
+        line = comb__line
+
+        case x0 do
+          10 -> {elem(line, 0) + 1, comb__offset + byte_size(<<x0::utf8>>)}
+          _ -> line
+        end
+      ),
+      comb__offset + byte_size(<<x0::utf8>>)
+    )
+  end
+
+  defp base_expr__423(rest, _acc, stack, context, line, offset) do
+    [_, acc | stack] = stack
+    base_expr__420(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__424(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+       when x0 === 32 or x0 === 9 or x0 === 10 or x0 === 13 do
+    base_expr__426(
+      rest,
+      acc,
+      stack,
+      context,
+      (
+        line = comb__line
+
+        case x0 do
+          10 -> {elem(line, 0) + 1, comb__offset + byte_size(<<x0::utf8>>)}
+          _ -> line
+        end
+      ),
+      comb__offset + byte_size(<<x0::utf8>>)
+    )
+  end
+
+  defp base_expr__424(rest, acc, stack, context, line, offset) do
+    base_expr__425(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__426(rest, acc, stack, context, line, offset) do
+    base_expr__424(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__425(rest, user_acc, [acc | stack], context, line, offset) do
+    _ = user_acc
+    base_expr__427(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__427(rest, user_acc, [acc | stack], context, line, offset) do
+    _ = user_acc
+    base_expr__428(rest, [] ++ acc, stack, context, line, offset)
+  end
+
+  defp base_expr__428(
          <<x0::utf8, x1::utf8, rest::binary>>,
          acc,
          stack,
@@ -5905,7 +5998,7 @@ defmodule KQL do
          comb__offset
        )
        when (x0 === 111 or x0 === 79) and (x1 === 114 or x1 === 82) do
-    base_expr__420(
+    base_expr__429(
       rest,
       [] ++ acc,
       stack,
@@ -5915,81 +6008,8 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__419(rest, acc, stack, context, line, offset) do
-    base_expr__411(rest, acc, stack, context, line, offset)
-  end
-
-  defp base_expr__420(rest, acc, stack, context, line, offset) do
-    base_expr__421(rest, [], [acc | stack], context, line, offset)
-  end
-
-  defp base_expr__421(rest, acc, stack, context, line, offset) do
-    base_expr__422(rest, [], [acc | stack], context, line, offset)
-  end
-
-  defp base_expr__422(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
-       when x0 === 32 or x0 === 9 or x0 === 10 or x0 === 13 do
-    base_expr__423(
-      rest,
-      acc,
-      stack,
-      context,
-      (
-        line = comb__line
-
-        case x0 do
-          10 -> {elem(line, 0) + 1, comb__offset + byte_size(<<x0::utf8>>)}
-          _ -> line
-        end
-      ),
-      comb__offset + byte_size(<<x0::utf8>>)
-    )
-  end
-
-  defp base_expr__422(rest, _acc, stack, context, line, offset) do
-    [_, acc | stack] = stack
-    base_expr__411(rest, acc, stack, context, line, offset)
-  end
-
-  defp base_expr__423(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
-       when x0 === 32 or x0 === 9 or x0 === 10 or x0 === 13 do
-    base_expr__425(
-      rest,
-      acc,
-      stack,
-      context,
-      (
-        line = comb__line
-
-        case x0 do
-          10 -> {elem(line, 0) + 1, comb__offset + byte_size(<<x0::utf8>>)}
-          _ -> line
-        end
-      ),
-      comb__offset + byte_size(<<x0::utf8>>)
-    )
-  end
-
-  defp base_expr__423(rest, acc, stack, context, line, offset) do
-    base_expr__424(rest, acc, stack, context, line, offset)
-  end
-
-  defp base_expr__425(rest, acc, stack, context, line, offset) do
-    base_expr__423(rest, acc, stack, context, line, offset)
-  end
-
-  defp base_expr__424(rest, user_acc, [acc | stack], context, line, offset) do
-    _ = user_acc
-    base_expr__426(rest, acc, stack, context, line, offset)
-  end
-
-  defp base_expr__426(rest, user_acc, [acc | stack], context, line, offset) do
-    _ = user_acc
-    base_expr__427(rest, [] ++ acc, stack, context, line, offset)
-  end
-
-  defp base_expr__427(rest, acc, stack, context, line, offset) do
-    base_expr__481(rest, [], [{rest, context, line, offset}, acc | stack], context, line, offset)
+  defp base_expr__428(rest, acc, stack, context, line, offset) do
+    base_expr__420(rest, acc, stack, context, line, offset)
   end
 
   defp base_expr__429(rest, acc, stack, context, line, offset) do
@@ -6000,63 +6020,84 @@ defmodule KQL do
     base_expr__431(rest, [], [acc | stack], context, line, offset)
   end
 
-  defp base_expr__431(rest, acc, stack, context, line, offset) do
-    base_expr__432(rest, [], [acc | stack], context, line, offset)
-  end
-
-  defp base_expr__432(
-         <<x0::utf8, x1::utf8, rest::binary>>,
-         acc,
-         stack,
-         context,
-         comb__line,
-         comb__offset
-       )
-       when x0 === 92 do
-    base_expr__433(
+  defp base_expr__431(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+       when x0 === 32 or x0 === 9 or x0 === 10 or x0 === 13 do
+    base_expr__432(
       rest,
-      [x1] ++ acc,
+      acc,
       stack,
       context,
       (
         line = comb__line
 
-        case x1 do
-          10 ->
-            {elem(line, 0) + 1, comb__offset + byte_size(<<x0::utf8>>) + byte_size(<<x1::utf8>>)}
-
-          _ ->
-            line
+        case x0 do
+          10 -> {elem(line, 0) + 1, comb__offset + byte_size(<<x0::utf8>>)}
+          _ -> line
         end
       ),
-      comb__offset + byte_size(<<x0::utf8>>) + byte_size(<<x1::utf8>>)
+      comb__offset + byte_size(<<x0::utf8>>)
     )
+  end
+
+  defp base_expr__431(rest, _acc, stack, context, line, offset) do
+    [_, acc | stack] = stack
+    base_expr__420(rest, acc, stack, context, line, offset)
   end
 
   defp base_expr__432(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
-       when x0 === 33 or (x0 >= 35 and x0 <= 39) or (x0 >= 43 and x0 <= 57) or x0 === 59 or
-              x0 === 61 or
-              (x0 >= 63 and x0 <= 91) or (x0 >= 93 and x0 <= 1_114_111) do
-    base_expr__433(
+       when x0 === 32 or x0 === 9 or x0 === 10 or x0 === 13 do
+    base_expr__434(
       rest,
-      [x0] ++ acc,
+      acc,
       stack,
       context,
-      comb__line,
+      (
+        line = comb__line
+
+        case x0 do
+          10 -> {elem(line, 0) + 1, comb__offset + byte_size(<<x0::utf8>>)}
+          _ -> line
+        end
+      ),
       comb__offset + byte_size(<<x0::utf8>>)
     )
   end
 
-  defp base_expr__432(rest, _acc, stack, context, line, offset) do
-    [_, _, _, _, acc | stack] = stack
-    base_expr__411(rest, acc, stack, context, line, offset)
+  defp base_expr__432(rest, acc, stack, context, line, offset) do
+    base_expr__433(rest, acc, stack, context, line, offset)
   end
 
-  defp base_expr__433(rest, acc, stack, context, line, offset) do
-    base_expr__435(rest, [], [{rest, acc, context, line, offset} | stack], context, line, offset)
+  defp base_expr__434(rest, acc, stack, context, line, offset) do
+    base_expr__432(rest, acc, stack, context, line, offset)
   end
 
-  defp base_expr__435(
+  defp base_expr__433(rest, user_acc, [acc | stack], context, line, offset) do
+    _ = user_acc
+    base_expr__435(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__435(rest, user_acc, [acc | stack], context, line, offset) do
+    _ = user_acc
+    base_expr__436(rest, [] ++ acc, stack, context, line, offset)
+  end
+
+  defp base_expr__436(rest, acc, stack, context, line, offset) do
+    base_expr__490(rest, [], [{rest, context, line, offset}, acc | stack], context, line, offset)
+  end
+
+  defp base_expr__438(rest, acc, stack, context, line, offset) do
+    base_expr__439(rest, [], [acc | stack], context, line, offset)
+  end
+
+  defp base_expr__439(rest, acc, stack, context, line, offset) do
+    base_expr__440(rest, [], [acc | stack], context, line, offset)
+  end
+
+  defp base_expr__440(rest, acc, stack, context, line, offset) do
+    base_expr__441(rest, [], [acc | stack], context, line, offset)
+  end
+
+  defp base_expr__441(
          <<x0::utf8, x1::utf8, rest::binary>>,
          acc,
          stack,
@@ -6065,7 +6106,7 @@ defmodule KQL do
          comb__offset
        )
        when x0 === 92 do
-    base_expr__436(
+    base_expr__442(
       rest,
       [x1] ++ acc,
       stack,
@@ -6085,11 +6126,11 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__435(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+  defp base_expr__441(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
        when x0 === 33 or (x0 >= 35 and x0 <= 39) or (x0 >= 43 and x0 <= 57) or x0 === 59 or
               x0 === 61 or
               (x0 >= 63 and x0 <= 91) or (x0 >= 93 and x0 <= 1_114_111) do
-    base_expr__436(
+    base_expr__442(
       rest,
       [x0] ++ acc,
       stack,
@@ -6099,15 +6140,67 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__435(rest, acc, stack, context, line, offset) do
-    base_expr__434(rest, acc, stack, context, line, offset)
+  defp base_expr__441(rest, _acc, stack, context, line, offset) do
+    [_, _, _, _, acc | stack] = stack
+    base_expr__420(rest, acc, stack, context, line, offset)
   end
 
-  defp base_expr__434(_, _, [{rest, acc, context, line, offset} | stack], _, _, _) do
-    base_expr__437(rest, acc, stack, context, line, offset)
+  defp base_expr__442(rest, acc, stack, context, line, offset) do
+    base_expr__444(rest, [], [{rest, acc, context, line, offset} | stack], context, line, offset)
   end
 
-  defp base_expr__436(
+  defp base_expr__444(
+         <<x0::utf8, x1::utf8, rest::binary>>,
+         acc,
+         stack,
+         context,
+         comb__line,
+         comb__offset
+       )
+       when x0 === 92 do
+    base_expr__445(
+      rest,
+      [x1] ++ acc,
+      stack,
+      context,
+      (
+        line = comb__line
+
+        case x1 do
+          10 ->
+            {elem(line, 0) + 1, comb__offset + byte_size(<<x0::utf8>>) + byte_size(<<x1::utf8>>)}
+
+          _ ->
+            line
+        end
+      ),
+      comb__offset + byte_size(<<x0::utf8>>) + byte_size(<<x1::utf8>>)
+    )
+  end
+
+  defp base_expr__444(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+       when x0 === 33 or (x0 >= 35 and x0 <= 39) or (x0 >= 43 and x0 <= 57) or x0 === 59 or
+              x0 === 61 or
+              (x0 >= 63 and x0 <= 91) or (x0 >= 93 and x0 <= 1_114_111) do
+    base_expr__445(
+      rest,
+      [x0] ++ acc,
+      stack,
+      context,
+      comb__line,
+      comb__offset + byte_size(<<x0::utf8>>)
+    )
+  end
+
+  defp base_expr__444(rest, acc, stack, context, line, offset) do
+    base_expr__443(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__443(_, _, [{rest, acc, context, line, offset} | stack], _, _, _) do
+    base_expr__446(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__445(
          inner_rest,
          inner_acc,
          [{rest, acc, context, line, offset} | stack],
@@ -6117,7 +6210,7 @@ defmodule KQL do
        ) do
     _ = {rest, acc, context, line, offset}
 
-    base_expr__435(
+    base_expr__444(
       inner_rest,
       [],
       [{inner_rest, inner_acc ++ acc, inner_context, inner_line, inner_offset} | stack],
@@ -6127,10 +6220,10 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__437(rest, user_acc, [acc | stack], context, line, offset) do
+  defp base_expr__446(rest, user_acc, [acc | stack], context, line, offset) do
     _ = user_acc
 
-    base_expr__438(
+    base_expr__447(
       rest,
       [List.to_string(:lists.reverse(user_acc))] ++ acc,
       stack,
@@ -6140,10 +6233,10 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__438(rest, user_acc, [acc | stack], context, line, offset) do
+  defp base_expr__447(rest, user_acc, [acc | stack], context, line, offset) do
     _ = user_acc
 
-    base_expr__439(
+    base_expr__448(
       rest,
       [
         unquoted:
@@ -6159,218 +6252,62 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__439(rest, user_acc, [acc | stack], context, line, offset) do
+  defp base_expr__448(rest, user_acc, [acc | stack], context, line, offset) do
     _ = user_acc
-    base_expr__440(rest, [value: :lists.reverse(user_acc)] ++ acc, stack, context, line, offset)
+    base_expr__449(rest, [value: :lists.reverse(user_acc)] ++ acc, stack, context, line, offset)
   end
 
-  defp base_expr__440(rest, acc, [_, previous_acc | stack], context, line, offset) do
-    base_expr__428(rest, acc ++ previous_acc, stack, context, line, offset)
+  defp base_expr__449(rest, acc, [_, previous_acc | stack], context, line, offset) do
+    base_expr__437(rest, acc ++ previous_acc, stack, context, line, offset)
   end
 
-  defp base_expr__441(_, _, [{rest, context, line, offset} | _] = stack, _, _, _) do
-    base_expr__429(rest, [], stack, context, line, offset)
+  defp base_expr__450(_, _, [{rest, context, line, offset} | _] = stack, _, _, _) do
+    base_expr__438(rest, [], stack, context, line, offset)
   end
 
-  defp base_expr__442(rest, acc, stack, context, line, offset) do
-    base_expr__443(rest, [], [acc | stack], context, line, offset)
+  defp base_expr__451(rest, acc, stack, context, line, offset) do
+    base_expr__452(rest, [], [acc | stack], context, line, offset)
   end
 
-  defp base_expr__443(rest, acc, stack, context, line, offset) do
-    base_expr__444(rest, [], [acc | stack], context, line, offset)
+  defp base_expr__452(rest, acc, stack, context, line, offset) do
+    base_expr__453(rest, [], [acc | stack], context, line, offset)
   end
 
-  defp base_expr__444(rest, acc, stack, context, line, offset) do
-    base_expr__460(rest, [], [{rest, context, line, offset}, acc | stack], context, line, offset)
-  end
-
-  defp base_expr__446(rest, acc, stack, context, line, offset) do
-    base_expr__447(rest, [], [acc | stack], context, line, offset)
-  end
-
-  defp base_expr__447(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
-       when x0 === 42 do
-    base_expr__448(
-      rest,
-      [x0] ++ acc,
-      stack,
-      context,
-      comb__line,
-      comb__offset + byte_size(<<x0::utf8>>)
-    )
-  end
-
-  defp base_expr__447(rest, _acc, stack, context, line, offset) do
-    [_, _, _, _, acc | stack] = stack
-    base_expr__441(rest, acc, stack, context, line, offset)
-  end
-
-  defp base_expr__448(rest, acc, stack, context, line, offset) do
-    base_expr__450(rest, [], [{rest, acc, context, line, offset} | stack], context, line, offset)
-  end
-
-  defp base_expr__450(rest, acc, stack, context, line, offset) do
-    base_expr__455(rest, [], [{rest, context, line, offset}, acc | stack], context, line, offset)
-  end
-
-  defp base_expr__452(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
-       when x0 === 42 do
-    base_expr__453(
-      rest,
-      [x0] ++ acc,
-      stack,
-      context,
-      comb__line,
-      comb__offset + byte_size(<<x0::utf8>>)
-    )
-  end
-
-  defp base_expr__452(rest, _acc, stack, context, line, offset) do
-    [_, acc | stack] = stack
-    base_expr__449(rest, acc, stack, context, line, offset)
-  end
-
-  defp base_expr__453(rest, acc, [_, previous_acc | stack], context, line, offset) do
-    base_expr__451(rest, acc ++ previous_acc, stack, context, line, offset)
-  end
-
-  defp base_expr__454(_, _, [{rest, context, line, offset} | _] = stack, _, _, _) do
-    base_expr__452(rest, [], stack, context, line, offset)
-  end
-
-  defp base_expr__455(
-         <<x0::utf8, x1::utf8, rest::binary>>,
-         acc,
-         stack,
-         context,
-         comb__line,
-         comb__offset
-       )
-       when x0 === 92 do
-    base_expr__456(
-      rest,
-      [x1] ++ acc,
-      stack,
-      context,
-      (
-        line = comb__line
-
-        case x1 do
-          10 ->
-            {elem(line, 0) + 1, comb__offset + byte_size(<<x0::utf8>>) + byte_size(<<x1::utf8>>)}
-
-          _ ->
-            line
-        end
-      ),
-      comb__offset + byte_size(<<x0::utf8>>) + byte_size(<<x1::utf8>>)
-    )
-  end
-
-  defp base_expr__455(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
-       when x0 === 33 or (x0 >= 35 and x0 <= 39) or (x0 >= 43 and x0 <= 57) or x0 === 59 or
-              x0 === 61 or
-              (x0 >= 63 and x0 <= 91) or (x0 >= 93 and x0 <= 1_114_111) do
-    base_expr__456(
-      rest,
-      [x0] ++ acc,
-      stack,
-      context,
-      comb__line,
-      comb__offset + byte_size(<<x0::utf8>>)
-    )
+  defp base_expr__453(rest, acc, stack, context, line, offset) do
+    base_expr__469(rest, [], [{rest, context, line, offset}, acc | stack], context, line, offset)
   end
 
   defp base_expr__455(rest, acc, stack, context, line, offset) do
-    base_expr__454(rest, acc, stack, context, line, offset)
+    base_expr__456(rest, [], [acc | stack], context, line, offset)
   end
 
-  defp base_expr__456(rest, acc, [_, previous_acc | stack], context, line, offset) do
-    base_expr__451(rest, acc ++ previous_acc, stack, context, line, offset)
-  end
-
-  defp base_expr__449(_, _, [{rest, acc, context, line, offset} | stack], _, _, _) do
-    base_expr__457(rest, acc, stack, context, line, offset)
-  end
-
-  defp base_expr__451(
-         inner_rest,
-         inner_acc,
-         [{rest, acc, context, line, offset} | stack],
-         inner_context,
-         inner_line,
-         inner_offset
-       ) do
-    _ = {rest, acc, context, line, offset}
-
-    base_expr__450(
-      inner_rest,
-      [],
-      [{inner_rest, inner_acc ++ acc, inner_context, inner_line, inner_offset} | stack],
-      inner_context,
-      inner_line,
-      inner_offset
-    )
-  end
-
-  defp base_expr__457(rest, user_acc, [acc | stack], context, line, offset) do
-    _ = user_acc
-
-    base_expr__458(
+  defp base_expr__456(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+       when x0 === 42 do
+    base_expr__457(
       rest,
-      [List.to_string(:lists.reverse(user_acc))] ++ acc,
+      [x0] ++ acc,
       stack,
       context,
-      line,
-      offset
+      comb__line,
+      comb__offset + byte_size(<<x0::utf8>>)
     )
   end
 
-  defp base_expr__458(rest, acc, [_, previous_acc | stack], context, line, offset) do
-    base_expr__445(rest, acc ++ previous_acc, stack, context, line, offset)
+  defp base_expr__456(rest, _acc, stack, context, line, offset) do
+    [_, _, _, _, acc | stack] = stack
+    base_expr__450(rest, acc, stack, context, line, offset)
   end
 
-  defp base_expr__459(_, _, [{rest, context, line, offset} | _] = stack, _, _, _) do
-    base_expr__446(rest, [], stack, context, line, offset)
+  defp base_expr__457(rest, acc, stack, context, line, offset) do
+    base_expr__459(rest, [], [{rest, acc, context, line, offset} | stack], context, line, offset)
   end
 
-  defp base_expr__460(rest, acc, stack, context, line, offset) do
-    base_expr__461(rest, [], [acc | stack], context, line, offset)
-  end
-
-  defp base_expr__461(
-         <<x0::utf8, x1::utf8, rest::binary>>,
-         acc,
-         stack,
-         context,
-         comb__line,
-         comb__offset
-       )
-       when x0 === 92 do
-    base_expr__462(
-      rest,
-      [x1] ++ acc,
-      stack,
-      context,
-      (
-        line = comb__line
-
-        case x1 do
-          10 ->
-            {elem(line, 0) + 1, comb__offset + byte_size(<<x0::utf8>>) + byte_size(<<x1::utf8>>)}
-
-          _ ->
-            line
-        end
-      ),
-      comb__offset + byte_size(<<x0::utf8>>) + byte_size(<<x1::utf8>>)
-    )
+  defp base_expr__459(rest, acc, stack, context, line, offset) do
+    base_expr__464(rest, [], [{rest, context, line, offset}, acc | stack], context, line, offset)
   end
 
   defp base_expr__461(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
-       when x0 === 33 or (x0 >= 35 and x0 <= 39) or (x0 >= 43 and x0 <= 57) or x0 === 59 or
-              x0 === 61 or
-              (x0 >= 63 and x0 <= 91) or (x0 >= 93 and x0 <= 1_114_111) do
+       when x0 === 42 do
     base_expr__462(
       rest,
       [x0] ++ acc,
@@ -6382,12 +6319,16 @@ defmodule KQL do
   end
 
   defp base_expr__461(rest, _acc, stack, context, line, offset) do
-    [acc | stack] = stack
-    base_expr__459(rest, acc, stack, context, line, offset)
+    [_, acc | stack] = stack
+    base_expr__458(rest, acc, stack, context, line, offset)
   end
 
-  defp base_expr__462(rest, acc, stack, context, line, offset) do
-    base_expr__464(rest, [], [{rest, acc, context, line, offset} | stack], context, line, offset)
+  defp base_expr__462(rest, acc, [_, previous_acc | stack], context, line, offset) do
+    base_expr__460(rest, acc ++ previous_acc, stack, context, line, offset)
+  end
+
+  defp base_expr__463(_, _, [{rest, context, line, offset} | _] = stack, _, _, _) do
+    base_expr__461(rest, [], stack, context, line, offset)
   end
 
   defp base_expr__464(
@@ -6437,11 +6378,15 @@ defmodule KQL do
     base_expr__463(rest, acc, stack, context, line, offset)
   end
 
-  defp base_expr__463(_, _, [{rest, acc, context, line, offset} | stack], _, _, _) do
+  defp base_expr__465(rest, acc, [_, previous_acc | stack], context, line, offset) do
+    base_expr__460(rest, acc ++ previous_acc, stack, context, line, offset)
+  end
+
+  defp base_expr__458(_, _, [{rest, acc, context, line, offset} | stack], _, _, _) do
     base_expr__466(rest, acc, stack, context, line, offset)
   end
 
-  defp base_expr__465(
+  defp base_expr__460(
          inner_rest,
          inner_acc,
          [{rest, acc, context, line, offset} | stack],
@@ -6451,7 +6396,7 @@ defmodule KQL do
        ) do
     _ = {rest, acc, context, line, offset}
 
-    base_expr__464(
+    base_expr__459(
       inner_rest,
       [],
       [{inner_rest, inner_acc ++ acc, inner_context, inner_line, inner_offset} | stack],
@@ -6461,57 +6406,32 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__466(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
-       when x0 === 42 do
+  defp base_expr__466(rest, user_acc, [acc | stack], context, line, offset) do
+    _ = user_acc
+
     base_expr__467(
       rest,
-      [x0] ++ acc,
+      [List.to_string(:lists.reverse(user_acc))] ++ acc,
       stack,
       context,
-      comb__line,
-      comb__offset + byte_size(<<x0::utf8>>)
+      line,
+      offset
     )
   end
 
-  defp base_expr__466(rest, _acc, stack, context, line, offset) do
-    [acc | stack] = stack
-    base_expr__459(rest, acc, stack, context, line, offset)
+  defp base_expr__467(rest, acc, [_, previous_acc | stack], context, line, offset) do
+    base_expr__454(rest, acc ++ previous_acc, stack, context, line, offset)
   end
 
-  defp base_expr__467(rest, acc, stack, context, line, offset) do
-    base_expr__469(rest, [], [{rest, acc, context, line, offset} | stack], context, line, offset)
+  defp base_expr__468(_, _, [{rest, context, line, offset} | _] = stack, _, _, _) do
+    base_expr__455(rest, [], stack, context, line, offset)
   end
 
   defp base_expr__469(rest, acc, stack, context, line, offset) do
-    base_expr__474(rest, [], [{rest, context, line, offset}, acc | stack], context, line, offset)
+    base_expr__470(rest, [], [acc | stack], context, line, offset)
   end
 
-  defp base_expr__471(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
-       when x0 === 42 do
-    base_expr__472(
-      rest,
-      [x0] ++ acc,
-      stack,
-      context,
-      comb__line,
-      comb__offset + byte_size(<<x0::utf8>>)
-    )
-  end
-
-  defp base_expr__471(rest, _acc, stack, context, line, offset) do
-    [_, acc | stack] = stack
-    base_expr__468(rest, acc, stack, context, line, offset)
-  end
-
-  defp base_expr__472(rest, acc, [_, previous_acc | stack], context, line, offset) do
-    base_expr__470(rest, acc ++ previous_acc, stack, context, line, offset)
-  end
-
-  defp base_expr__473(_, _, [{rest, context, line, offset} | _] = stack, _, _, _) do
-    base_expr__471(rest, [], stack, context, line, offset)
-  end
-
-  defp base_expr__474(
+  defp base_expr__470(
          <<x0::utf8, x1::utf8, rest::binary>>,
          acc,
          stack,
@@ -6520,7 +6440,7 @@ defmodule KQL do
          comb__offset
        )
        when x0 === 92 do
-    base_expr__475(
+    base_expr__471(
       rest,
       [x1] ++ acc,
       stack,
@@ -6540,11 +6460,11 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__474(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+  defp base_expr__470(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
        when x0 === 33 or (x0 >= 35 and x0 <= 39) or (x0 >= 43 and x0 <= 57) or x0 === 59 or
               x0 === 61 or
               (x0 >= 63 and x0 <= 91) or (x0 >= 93 and x0 <= 1_114_111) do
-    base_expr__475(
+    base_expr__471(
       rest,
       [x0] ++ acc,
       stack,
@@ -6554,19 +6474,67 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__474(rest, acc, stack, context, line, offset) do
-    base_expr__473(rest, acc, stack, context, line, offset)
+  defp base_expr__470(rest, _acc, stack, context, line, offset) do
+    [acc | stack] = stack
+    base_expr__468(rest, acc, stack, context, line, offset)
   end
 
-  defp base_expr__475(rest, acc, [_, previous_acc | stack], context, line, offset) do
-    base_expr__470(rest, acc ++ previous_acc, stack, context, line, offset)
+  defp base_expr__471(rest, acc, stack, context, line, offset) do
+    base_expr__473(rest, [], [{rest, acc, context, line, offset} | stack], context, line, offset)
   end
 
-  defp base_expr__468(_, _, [{rest, acc, context, line, offset} | stack], _, _, _) do
-    base_expr__476(rest, acc, stack, context, line, offset)
+  defp base_expr__473(
+         <<x0::utf8, x1::utf8, rest::binary>>,
+         acc,
+         stack,
+         context,
+         comb__line,
+         comb__offset
+       )
+       when x0 === 92 do
+    base_expr__474(
+      rest,
+      [x1] ++ acc,
+      stack,
+      context,
+      (
+        line = comb__line
+
+        case x1 do
+          10 ->
+            {elem(line, 0) + 1, comb__offset + byte_size(<<x0::utf8>>) + byte_size(<<x1::utf8>>)}
+
+          _ ->
+            line
+        end
+      ),
+      comb__offset + byte_size(<<x0::utf8>>) + byte_size(<<x1::utf8>>)
+    )
   end
 
-  defp base_expr__470(
+  defp base_expr__473(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+       when x0 === 33 or (x0 >= 35 and x0 <= 39) or (x0 >= 43 and x0 <= 57) or x0 === 59 or
+              x0 === 61 or
+              (x0 >= 63 and x0 <= 91) or (x0 >= 93 and x0 <= 1_114_111) do
+    base_expr__474(
+      rest,
+      [x0] ++ acc,
+      stack,
+      context,
+      comb__line,
+      comb__offset + byte_size(<<x0::utf8>>)
+    )
+  end
+
+  defp base_expr__473(rest, acc, stack, context, line, offset) do
+    base_expr__472(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__472(_, _, [{rest, acc, context, line, offset} | stack], _, _, _) do
+    base_expr__475(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__474(
          inner_rest,
          inner_acc,
          [{rest, acc, context, line, offset} | stack],
@@ -6576,7 +6544,7 @@ defmodule KQL do
        ) do
     _ = {rest, acc, context, line, offset}
 
-    base_expr__469(
+    base_expr__473(
       inner_rest,
       [],
       [{inner_rest, inner_acc ++ acc, inner_context, inner_line, inner_offset} | stack],
@@ -6586,10 +6554,135 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__476(rest, user_acc, [acc | stack], context, line, offset) do
+  defp base_expr__475(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+       when x0 === 42 do
+    base_expr__476(
+      rest,
+      [x0] ++ acc,
+      stack,
+      context,
+      comb__line,
+      comb__offset + byte_size(<<x0::utf8>>)
+    )
+  end
+
+  defp base_expr__475(rest, _acc, stack, context, line, offset) do
+    [acc | stack] = stack
+    base_expr__468(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__476(rest, acc, stack, context, line, offset) do
+    base_expr__478(rest, [], [{rest, acc, context, line, offset} | stack], context, line, offset)
+  end
+
+  defp base_expr__478(rest, acc, stack, context, line, offset) do
+    base_expr__483(rest, [], [{rest, context, line, offset}, acc | stack], context, line, offset)
+  end
+
+  defp base_expr__480(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+       when x0 === 42 do
+    base_expr__481(
+      rest,
+      [x0] ++ acc,
+      stack,
+      context,
+      comb__line,
+      comb__offset + byte_size(<<x0::utf8>>)
+    )
+  end
+
+  defp base_expr__480(rest, _acc, stack, context, line, offset) do
+    [_, acc | stack] = stack
+    base_expr__477(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__481(rest, acc, [_, previous_acc | stack], context, line, offset) do
+    base_expr__479(rest, acc ++ previous_acc, stack, context, line, offset)
+  end
+
+  defp base_expr__482(_, _, [{rest, context, line, offset} | _] = stack, _, _, _) do
+    base_expr__480(rest, [], stack, context, line, offset)
+  end
+
+  defp base_expr__483(
+         <<x0::utf8, x1::utf8, rest::binary>>,
+         acc,
+         stack,
+         context,
+         comb__line,
+         comb__offset
+       )
+       when x0 === 92 do
+    base_expr__484(
+      rest,
+      [x1] ++ acc,
+      stack,
+      context,
+      (
+        line = comb__line
+
+        case x1 do
+          10 ->
+            {elem(line, 0) + 1, comb__offset + byte_size(<<x0::utf8>>) + byte_size(<<x1::utf8>>)}
+
+          _ ->
+            line
+        end
+      ),
+      comb__offset + byte_size(<<x0::utf8>>) + byte_size(<<x1::utf8>>)
+    )
+  end
+
+  defp base_expr__483(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+       when x0 === 33 or (x0 >= 35 and x0 <= 39) or (x0 >= 43 and x0 <= 57) or x0 === 59 or
+              x0 === 61 or
+              (x0 >= 63 and x0 <= 91) or (x0 >= 93 and x0 <= 1_114_111) do
+    base_expr__484(
+      rest,
+      [x0] ++ acc,
+      stack,
+      context,
+      comb__line,
+      comb__offset + byte_size(<<x0::utf8>>)
+    )
+  end
+
+  defp base_expr__483(rest, acc, stack, context, line, offset) do
+    base_expr__482(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__484(rest, acc, [_, previous_acc | stack], context, line, offset) do
+    base_expr__479(rest, acc ++ previous_acc, stack, context, line, offset)
+  end
+
+  defp base_expr__477(_, _, [{rest, acc, context, line, offset} | stack], _, _, _) do
+    base_expr__485(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__479(
+         inner_rest,
+         inner_acc,
+         [{rest, acc, context, line, offset} | stack],
+         inner_context,
+         inner_line,
+         inner_offset
+       ) do
+    _ = {rest, acc, context, line, offset}
+
+    base_expr__478(
+      inner_rest,
+      [],
+      [{inner_rest, inner_acc ++ acc, inner_context, inner_line, inner_offset} | stack],
+      inner_context,
+      inner_line,
+      inner_offset
+    )
+  end
+
+  defp base_expr__485(rest, user_acc, [acc | stack], context, line, offset) do
     _ = user_acc
 
-    base_expr__477(
+    base_expr__486(
       rest,
       [List.to_string(:lists.reverse(user_acc))] ++ acc,
       stack,
@@ -6599,14 +6692,14 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__477(rest, acc, [_, previous_acc | stack], context, line, offset) do
-    base_expr__445(rest, acc ++ previous_acc, stack, context, line, offset)
+  defp base_expr__486(rest, acc, [_, previous_acc | stack], context, line, offset) do
+    base_expr__454(rest, acc ++ previous_acc, stack, context, line, offset)
   end
 
-  defp base_expr__445(rest, user_acc, [acc | stack], context, line, offset) do
+  defp base_expr__454(rest, user_acc, [acc | stack], context, line, offset) do
     _ = user_acc
 
-    base_expr__478(
+    base_expr__487(
       rest,
       [
         glob:
@@ -6622,43 +6715,43 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__478(rest, user_acc, [acc | stack], context, line, offset) do
+  defp base_expr__487(rest, user_acc, [acc | stack], context, line, offset) do
     _ = user_acc
-    base_expr__479(rest, [value: :lists.reverse(user_acc)] ++ acc, stack, context, line, offset)
+    base_expr__488(rest, [value: :lists.reverse(user_acc)] ++ acc, stack, context, line, offset)
   end
 
-  defp base_expr__479(rest, acc, [_, previous_acc | stack], context, line, offset) do
-    base_expr__428(rest, acc ++ previous_acc, stack, context, line, offset)
+  defp base_expr__488(rest, acc, [_, previous_acc | stack], context, line, offset) do
+    base_expr__437(rest, acc ++ previous_acc, stack, context, line, offset)
   end
 
-  defp base_expr__480(_, _, [{rest, context, line, offset} | _] = stack, _, _, _) do
-    base_expr__442(rest, [], stack, context, line, offset)
+  defp base_expr__489(_, _, [{rest, context, line, offset} | _] = stack, _, _, _) do
+    base_expr__451(rest, [], stack, context, line, offset)
   end
 
-  defp base_expr__481(rest, acc, stack, context, line, offset) do
-    base_expr__482(rest, [], [acc | stack], context, line, offset)
+  defp base_expr__490(rest, acc, stack, context, line, offset) do
+    base_expr__491(rest, [], [acc | stack], context, line, offset)
   end
 
-  defp base_expr__482(rest, acc, stack, context, line, offset) do
-    base_expr__483(rest, [], [acc | stack], context, line, offset)
+  defp base_expr__491(rest, acc, stack, context, line, offset) do
+    base_expr__492(rest, [], [acc | stack], context, line, offset)
   end
 
-  defp base_expr__483(<<"\"", rest::binary>>, acc, stack, context, comb__line, comb__offset) do
-    base_expr__484(rest, [] ++ acc, stack, context, comb__line, comb__offset + 1)
+  defp base_expr__492(<<"\"", rest::binary>>, acc, stack, context, comb__line, comb__offset) do
+    base_expr__493(rest, [] ++ acc, stack, context, comb__line, comb__offset + 1)
   end
 
-  defp base_expr__483(rest, _acc, stack, context, line, offset) do
+  defp base_expr__492(rest, _acc, stack, context, line, offset) do
     [_, acc | stack] = stack
-    base_expr__480(rest, acc, stack, context, line, offset)
+    base_expr__489(rest, acc, stack, context, line, offset)
   end
 
-  defp base_expr__484(rest, acc, stack, context, line, offset) do
-    base_expr__485(rest, [], [acc | stack], context, line, offset)
+  defp base_expr__493(rest, acc, stack, context, line, offset) do
+    base_expr__494(rest, [], [acc | stack], context, line, offset)
   end
 
-  defp base_expr__485(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+  defp base_expr__494(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
        when x0 !== 34 do
-    base_expr__486(
+    base_expr__495(
       rest,
       [<<x0::utf8>>] ++ acc,
       stack,
@@ -6675,125 +6768,16 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__485(rest, _acc, stack, context, line, offset) do
+  defp base_expr__494(rest, _acc, stack, context, line, offset) do
     [_, _, acc | stack] = stack
-    base_expr__480(rest, acc, stack, context, line, offset)
-  end
-
-  defp base_expr__486(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
-       when x0 !== 34 do
-    base_expr__488(
-      rest,
-      [x0] ++ acc,
-      stack,
-      context,
-      (
-        line = comb__line
-
-        case x0 do
-          10 -> {elem(line, 0) + 1, comb__offset + byte_size(<<x0::utf8>>)}
-          _ -> line
-        end
-      ),
-      comb__offset + byte_size(<<x0::utf8>>)
-    )
-  end
-
-  defp base_expr__486(rest, acc, stack, context, line, offset) do
-    base_expr__487(rest, acc, stack, context, line, offset)
-  end
-
-  defp base_expr__488(rest, acc, stack, context, line, offset) do
-    base_expr__486(rest, acc, stack, context, line, offset)
-  end
-
-  defp base_expr__487(rest, user_acc, [acc | stack], context, line, offset) do
-    _ = user_acc
-
-    base_expr__489(
-      rest,
-      [List.to_string(:lists.reverse(user_acc))] ++ acc,
-      stack,
-      context,
-      line,
-      offset
-    )
-  end
-
-  defp base_expr__489(<<"\"", rest::binary>>, acc, stack, context, comb__line, comb__offset) do
-    base_expr__490(rest, [] ++ acc, stack, context, comb__line, comb__offset + 1)
-  end
-
-  defp base_expr__489(rest, _acc, stack, context, line, offset) do
-    [_, acc | stack] = stack
-    base_expr__480(rest, acc, stack, context, line, offset)
-  end
-
-  defp base_expr__490(rest, user_acc, [acc | stack], context, line, offset) do
-    _ = user_acc
-
-    base_expr__491(
-      rest,
-      [
-        quoted:
-          case :lists.reverse(user_acc) do
-            [one] -> one
-            many -> raise "unwrap_and_tag/3 expected a single token, got: #{inspect(many)}"
-          end
-      ] ++ acc,
-      stack,
-      context,
-      line,
-      offset
-    )
-  end
-
-  defp base_expr__491(rest, user_acc, [acc | stack], context, line, offset) do
-    _ = user_acc
-    base_expr__492(rest, [value: :lists.reverse(user_acc)] ++ acc, stack, context, line, offset)
-  end
-
-  defp base_expr__492(rest, acc, [_, previous_acc | stack], context, line, offset) do
-    base_expr__428(rest, acc ++ previous_acc, stack, context, line, offset)
-  end
-
-  defp base_expr__411(_, _, [{rest, acc, context, line, offset} | stack], _, _, _) do
-    base_expr__493(rest, acc, stack, context, line, offset)
-  end
-
-  defp base_expr__428(
-         inner_rest,
-         inner_acc,
-         [{rest, acc, context, line, offset} | stack],
-         inner_context,
-         inner_line,
-         inner_offset
-       ) do
-    _ = {rest, acc, context, line, offset}
-
-    base_expr__412(
-      inner_rest,
-      [],
-      [{inner_rest, inner_acc ++ acc, inner_context, inner_line, inner_offset} | stack],
-      inner_context,
-      inner_line,
-      inner_offset
-    )
-  end
-
-  defp base_expr__493(rest, acc, stack, context, line, offset) do
-    base_expr__494(rest, [], [acc | stack], context, line, offset)
-  end
-
-  defp base_expr__494(rest, acc, stack, context, line, offset) do
-    base_expr__495(rest, [], [acc | stack], context, line, offset)
+    base_expr__489(rest, acc, stack, context, line, offset)
   end
 
   defp base_expr__495(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
-       when x0 === 32 or x0 === 9 or x0 === 10 or x0 === 13 do
+       when x0 !== 34 do
     base_expr__497(
       rest,
-      acc,
+      [x0] ++ acc,
       stack,
       context,
       (
@@ -6818,30 +6802,139 @@ defmodule KQL do
 
   defp base_expr__496(rest, user_acc, [acc | stack], context, line, offset) do
     _ = user_acc
-    base_expr__498(rest, acc, stack, context, line, offset)
+
+    base_expr__498(
+      rest,
+      [List.to_string(:lists.reverse(user_acc))] ++ acc,
+      stack,
+      context,
+      line,
+      offset
+    )
   end
 
-  defp base_expr__498(rest, user_acc, [acc | stack], context, line, offset) do
+  defp base_expr__498(<<"\"", rest::binary>>, acc, stack, context, comb__line, comb__offset) do
+    base_expr__499(rest, [] ++ acc, stack, context, comb__line, comb__offset + 1)
+  end
+
+  defp base_expr__498(rest, _acc, stack, context, line, offset) do
+    [_, acc | stack] = stack
+    base_expr__489(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__499(rest, user_acc, [acc | stack], context, line, offset) do
     _ = user_acc
-    base_expr__499(rest, [] ++ acc, stack, context, line, offset)
+
+    base_expr__500(
+      rest,
+      [
+        quoted:
+          case :lists.reverse(user_acc) do
+            [one] -> one
+            many -> raise "unwrap_and_tag/3 expected a single token, got: #{inspect(many)}"
+          end
+      ] ++ acc,
+      stack,
+      context,
+      line,
+      offset
+    )
   end
 
-  defp base_expr__499(<<")", rest::binary>>, acc, stack, context, comb__line, comb__offset) do
-    base_expr__500(rest, [] ++ acc, stack, context, comb__line, comb__offset + 1)
+  defp base_expr__500(rest, user_acc, [acc | stack], context, line, offset) do
+    _ = user_acc
+    base_expr__501(rest, [value: :lists.reverse(user_acc)] ++ acc, stack, context, line, offset)
   end
 
-  defp base_expr__499(rest, acc, stack, context, line, offset) do
-    base_expr__257(rest, acc, stack, context, line, offset)
+  defp base_expr__501(rest, acc, [_, previous_acc | stack], context, line, offset) do
+    base_expr__437(rest, acc ++ previous_acc, stack, context, line, offset)
   end
 
-  defp base_expr__500(rest, acc, [_, previous_acc | stack], context, line, offset) do
+  defp base_expr__420(_, _, [{rest, acc, context, line, offset} | stack], _, _, _) do
+    base_expr__502(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__437(
+         inner_rest,
+         inner_acc,
+         [{rest, acc, context, line, offset} | stack],
+         inner_context,
+         inner_line,
+         inner_offset
+       ) do
+    _ = {rest, acc, context, line, offset}
+
+    base_expr__421(
+      inner_rest,
+      [],
+      [{inner_rest, inner_acc ++ acc, inner_context, inner_line, inner_offset} | stack],
+      inner_context,
+      inner_line,
+      inner_offset
+    )
+  end
+
+  defp base_expr__502(rest, acc, stack, context, line, offset) do
+    base_expr__503(rest, [], [acc | stack], context, line, offset)
+  end
+
+  defp base_expr__503(rest, acc, stack, context, line, offset) do
+    base_expr__504(rest, [], [acc | stack], context, line, offset)
+  end
+
+  defp base_expr__504(<<x0::utf8, rest::binary>>, acc, stack, context, comb__line, comb__offset)
+       when x0 === 32 or x0 === 9 or x0 === 10 or x0 === 13 do
+    base_expr__506(
+      rest,
+      acc,
+      stack,
+      context,
+      (
+        line = comb__line
+
+        case x0 do
+          10 -> {elem(line, 0) + 1, comb__offset + byte_size(<<x0::utf8>>)}
+          _ -> line
+        end
+      ),
+      comb__offset + byte_size(<<x0::utf8>>)
+    )
+  end
+
+  defp base_expr__504(rest, acc, stack, context, line, offset) do
+    base_expr__505(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__506(rest, acc, stack, context, line, offset) do
+    base_expr__504(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__505(rest, user_acc, [acc | stack], context, line, offset) do
+    _ = user_acc
+    base_expr__507(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__507(rest, user_acc, [acc | stack], context, line, offset) do
+    _ = user_acc
+    base_expr__508(rest, [] ++ acc, stack, context, line, offset)
+  end
+
+  defp base_expr__508(<<")", rest::binary>>, acc, stack, context, comb__line, comb__offset) do
+    base_expr__509(rest, [] ++ acc, stack, context, comb__line, comb__offset + 1)
+  end
+
+  defp base_expr__508(rest, acc, stack, context, line, offset) do
+    base_expr__266(rest, acc, stack, context, line, offset)
+  end
+
+  defp base_expr__509(rest, acc, [_, previous_acc | stack], context, line, offset) do
     base_expr__95(rest, acc ++ previous_acc, stack, context, line, offset)
   end
 
   defp base_expr__95(rest, user_acc, [acc | stack], context, line, offset) do
     _ = user_acc
 
-    base_expr__501(
+    base_expr__510(
       rest,
       [value_list: :lists.reverse(user_acc)] ++ acc,
       stack,
@@ -6851,14 +6944,14 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__501(rest, acc, [_, previous_acc | stack], context, line, offset) do
+  defp base_expr__510(rest, acc, [_, previous_acc | stack], context, line, offset) do
     base_expr__25(rest, acc ++ previous_acc, stack, context, line, offset)
   end
 
   defp base_expr__25(rest, user_acc, [acc | stack], context, line, offset) do
     _ = user_acc
 
-    base_expr__502(
+    base_expr__511(
       rest,
       [comparison: :lists.reverse(user_acc)] ++ acc,
       stack,
@@ -6868,7 +6961,7 @@ defmodule KQL do
     )
   end
 
-  defp base_expr__502(rest, acc, _stack, context, line, offset) do
+  defp base_expr__511(rest, acc, _stack, context, line, offset) do
     {:ok, acc, rest, context, line, offset}
   end
 end

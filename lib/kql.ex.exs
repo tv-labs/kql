@@ -317,6 +317,12 @@ defmodule KQL do
     )
     |> ignore(optional_whitespace)
     |> ignore(string("]"))
+    # `[`, `]` and `,` stay legal inside an unquoted value, so `[a]x` is a
+    # value that merely looks like a list with a suffix. Requiring no value
+    # character after the closing bracket makes such input fall back to
+    # `value` and parse exactly as it did before lists existed. Without this,
+    # every value with a list-shaped prefix would start erroring.
+    |> lookahead_not(choice([unquoted_char, utf8_char([?*])]))
 
   value_list =
     [paren_value_list, bracket_value_list]

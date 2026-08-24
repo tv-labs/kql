@@ -661,6 +661,17 @@ defmodule KQLTest do
       assert Enum.map(ast["value"]["terms"], & &1["term"]) == ["red,blue"]
     end
 
+    test "fall back to an ordinary value when a value character follows the list" do
+      # `[`, `]` and `,` remain legal unquoted-value characters, so `[a]x` is a
+      # value that merely looks like a list with a suffix. It parsed as a value
+      # before lists existed and must keep doing so, or every value with a
+      # list-shaped prefix would start erroring.
+      for query <- ["color:[a]x", "color:[a,b]c", "color:[a]*", "color:[a],b"] do
+        assert {:ok, %{"ast" => ast}} = KQL.parse(query), "#{query} failed to parse"
+        assert ast["value"]["type"] == "value", "#{query} should be a value, not a list"
+      end
+    end
+
     test "fall back to an ordinary value when the bracket is unclosed" do
       # Known limitation. `[` and `]` are legal `unescaped_character`s, so an
       # unclosed list is still a valid unquoted value and parses as one.
@@ -751,7 +762,17 @@ defmodule KQLTest do
     end
   end
 
+  # Dotted names are generated too, so the namespacing syntax gets property
+  # coverage rather than only the examples above. Each segment starts with a
+  # letter or underscore, which keeps the whole name from starting with a dot
+  # or a digit.
   defp valid_field_name_generator do
+    gen all(segments <- list_of(valid_field_segment_generator(), min_length: 1, max_length: 3)) do
+      Enum.join(segments, ".")
+    end
+  end
+
+  defp valid_field_segment_generator do
     gen all(
           first_char <-
             member_of(Enum.map(?a..?z, &<<&1>>) ++ Enum.map(?A..?Z, &<<&1>>) ++ ["_"]),
@@ -777,12 +798,44 @@ defmodule KQLTest do
   end
 
   defp valid_combined_value_generator do
+    one_of([
+      valid_paren_list_generator(),
+      valid_bracket_list_generator()
+    ])
+  end
+
+  defp valid_paren_list_generator do
     gen all(
           terms <- list_of(valid_uncombined_value_generator(), min_length: 2, max_length: 5),
           space1 <- member_of(["", " "]),
           space2 <- member_of(["", " "])
         ) do
       "(" <> space1 <> Enum.join(terms, " OR ") <> space2 <> ")"
+    end
+  end
+
+  defp valid_bracket_list_generator do
+    gen all(
+          terms <- list_of(valid_bracket_element_generator(), min_length: 1, max_length: 5),
+          space <- member_of(["", " "])
+        ) do
+      "[" <> Enum.join(terms, "," <> space) <> "]"
+    end
+  end
+
+  defp valid_bracket_element_generator do
+    one_of([
+      valid_quoted_value_generator(),
+      valid_glob_value_generator(),
+      valid_bracket_unquoted_value_generator()
+    ])
+  end
+
+  # `,` and `]` delimit a bracketed list, so an unquoted element must escape
+  # them in addition to everything the parenthesised form escapes.
+  defp valid_bracket_unquoted_value_generator do
+    gen all(value <- string(:ascii, min_length: 1)) do
+      escape_symbols(value, ["\\", "(", ")", ":", "<", ">", "\"", "*", " ", "=", ",", "]"])
     end
   end
 
