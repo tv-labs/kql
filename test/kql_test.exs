@@ -618,6 +618,68 @@ defmodule KQLTest do
     end
   end
 
+  describe "bracketed value lists" do
+    test "are equivalent to a parenthesised OR list" do
+      assert {:ok, %{"ast" => bracketed}} = KQL.parse("color:[red,blue]")
+      assert {:ok, %{"ast" => parens}} = KQL.parse("color:(red or blue)")
+
+      assert bracketed["value"]["type"] == "value_list"
+      assert bracketed["value"] == parens["value"]
+    end
+
+    test "accept whitespace around the comma" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse("color:[red, blue]")
+      assert Enum.map(ast["value"]["terms"], & &1["term"]) == ["red", "blue"]
+    end
+
+    test "accept quoted elements" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse(~S|color:["red","blue"]|)
+      assert Enum.map(ast["value"]["terms"], & &1["term"]) == ["red", "blue"]
+    end
+
+    test "accept more than two elements" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse("color:[red,blue,green]")
+      assert Enum.map(ast["value"]["terms"], & &1["term"]) == ["red", "blue", "green"]
+    end
+
+    test "accept globs as elements" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse("color:[red*,blue]")
+
+      assert [
+               %{"term" => "red*", "glob" => true},
+               %{"term" => "blue", "glob" => false}
+             ] = ast["value"]["terms"]
+    end
+
+    test "treat a quoted comma as a literal" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse(~S|color:["red,blue"]|)
+      assert Enum.map(ast["value"]["terms"], & &1["term"]) == ["red,blue"]
+    end
+
+    test "treat an escaped comma as a literal" do
+      assert {:ok, %{"ast" => ast}} = KQL.parse(~S|color:[red\,blue]|)
+      assert Enum.map(ast["value"]["terms"], & &1["term"]) == ["red,blue"]
+    end
+
+    test "fall back to an ordinary value when the bracket is unclosed" do
+      # Known limitation. `[` and `]` are legal `unescaped_character`s, so an
+      # unclosed list is still a valid unquoted value and parses as one.
+      # Rejecting it would mean forbidding an unquoted value from starting with
+      # `[`, which would stop queries that parse today from parsing at all.
+      assert {:ok, %{"ast" => ast}} = KQL.parse("color:[red,blue")
+      assert ast["value"]["type"] == "value"
+      assert ast["value"]["term"] == "[red,blue"
+    end
+
+    test "still parse a lone bracket as an ordinary value character" do
+      # `[` and `]` remain legal inside an unquoted value, so a value that
+      # merely contains one is unaffected.
+      assert {:ok, %{"ast" => ast}} = KQL.parse("color:red[1]")
+      assert ast["value"]["term"] == "red[1]"
+      assert ast["value"]["type"] == "value"
+    end
+  end
+
   @max_query_depth 5
 
   defp valid_query_generator(depth \\ 0)

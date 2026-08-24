@@ -209,7 +209,79 @@ defmodule KQL do
     |> choice()
     |> label("value")
 
-  value_list =
+  # A bracketed list delimits its elements with `,` and `]`, so its elements
+  # need a character set excluding those two. The parenthesised form needs no
+  # such thing: `(`, `)` and whitespace are all outside `unescaped_character`
+  # already, so `(a or b)` splits cleanly. Without the restriction, `[a,b]`
+  # parses as the single value `a,b]`.
+  #
+  # `unescaped_character` minus `,` (44) and `]` (93). A literal comma or `]`
+  # in an element must be escaped or quoted, matching how a literal paren
+  # already behaves inside `( ... )`.
+  bracket_unescaped_character =
+    [
+      ?!,
+      ?#..?',
+      # 43 (+) then 45-57 (- to 9), skipping 44 (,)
+      ?+,
+      ?-..?9,
+      ?;,
+      ?=,
+      ??..?[,
+      # 94+ (^ onwards), skipping 93 (])
+      ?^..0x10FFFF
+    ]
+    |> utf8_char()
+    |> label("unescaped character in a list")
+
+  bracket_unquoted_char =
+    choice([
+      escaped_character,
+      bracket_unescaped_character
+    ])
+
+  bracket_unquoted_value =
+    bracket_unquoted_char
+    |> times(min: 1)
+    |> reduce({List, :to_string, []})
+    |> unwrap_and_tag(:unquoted)
+    |> tag(:value)
+    |> label("unquoted list value")
+
+  bracket_glob_tail =
+    [
+      bracket_unquoted_char,
+      utf8_char([?*])
+    ]
+    |> choice()
+    |> repeat()
+
+  bracket_suffix_glob =
+    bracket_unquoted_char
+    |> times(min: 1)
+    |> utf8_char([?*])
+    |> concat(bracket_glob_tail)
+    |> reduce({List, :to_string, []})
+
+  bracket_prefix_glob =
+    [?*]
+    |> utf8_char()
+    |> concat(bracket_glob_tail)
+    |> reduce({List, :to_string, []})
+
+  bracket_glob_value =
+    [bracket_suffix_glob, bracket_prefix_glob]
+    |> choice()
+    |> unwrap_and_tag(:glob)
+    |> tag(:value)
+    |> label("glob list value")
+
+  bracket_value =
+    [quoted_value, bracket_glob_value, bracket_unquoted_value]
+    |> choice()
+    |> label("list value")
+
+  paren_value_list =
     "("
     |> string()
     |> ignore()
@@ -225,6 +297,30 @@ defmodule KQL do
     )
     |> ignore(optional_whitespace)
     |> ignore(string(")"))
+
+  bracket_value_list =
+    "["
+    |> string()
+    |> ignore()
+    |> ignore(optional_whitespace)
+    |> concat(bracket_value)
+    |> times(
+      optional_whitespace
+      |> ignore()
+      |> ignore(string(","))
+      |> ignore(optional_whitespace)
+      |> concat(bracket_value),
+      # min: 0 so a single-element list parses. The parenthesised form can
+      # require two because `(a)` is already a group expression; `[a]` has no
+      # such reading, and a generated query may well produce one element.
+      min: 0
+    )
+    |> ignore(optional_whitespace)
+    |> ignore(string("]"))
+
+  value_list =
+    [paren_value_list, bracket_value_list]
+    |> choice()
     |> tag(:value_list)
     |> label("value list")
 
